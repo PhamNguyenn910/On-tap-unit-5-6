@@ -60,7 +60,7 @@
         </div>
         <ul>
             <li><strong style="color:#f1c40f;">MỤC TIÊU:</strong> Ôn luyện triệt để Phrasal verbs, Word Families, Idioms & Từ vựng Unit 5-6.</li>
-            <li><strong style="color:#e74c3c;">LUẬT LÀM BÀI:</strong> Em bắt buộc phải chọn đáp án cho <b>TẤT CẢ</b> 300 câu hỏi mới được phép nộp bài.</li>
+            <li><strong style="color:#e74c3c;">LUẬT LÀM BÀI:</strong> Em bắt buộc phải chọn đúng đáp án cho <b>TẤT CẢ</b> 300 câu hỏi mới được phép nộp bài.</li>
             <li><strong style="color:#3498db;">GIÁM SÁT NGHIÊM NGẶT:</strong> Hệ thống sẽ tự động khóa toàn màn hình. Nghiêm cấm dùng phím tắt (F12, Ctrl+C), nghiêm cấm đổi tab hay thu nhỏ cửa sổ.</li>
             <li><strong style="color:#e67e22;">CHẤM ĐIỂM CHI TIẾT:</strong> Hệ thống sẽ tự động gửi bảng điểm và lịch sử nộp bài của em cho Giáo viên.</li>
         </ul>
@@ -78,7 +78,7 @@
     <div class="header-bar" id="header-bar" style="display:none;">
         <div>Học viên: <span id="display-name"></span></div>
         <div id="timer">⏱ Thời gian: 00:00</div>
-        <div id="warning-box">Lỗi Giám sát: <span id="violation-count">0</span>/3 | Số lần nộp: <span id="attempt-count">0</span></div>
+        <div id="warning-box">Lỗi Giám sát: <span id="violation-count">0</span>/3 | Số lần bấm nộp: <span id="attempt-count">0</span></div>
     </div>
 
     <div id="test-container">
@@ -101,7 +101,14 @@
         let isExamLocked = false;
         let activityLog = [];
 
-        // CƠ CHẾ CHỐNG COPY BẰNG BÀN PHÍM
+        // HÀM GHI LOG HOẠT ĐỘNG
+        function logActivity(type, message) {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('vi-VN');
+            activityLog.push(`[${timeString}] [${type}] ${message}`);
+        }
+
+        // CƠ CHẾ CHỐNG COPY BẰNG BÀN PHÍM VÀ DEVTOOLS
         document.addEventListener('keydown', function(e) {
             if (e.key === 'F12' || 
                (e.ctrlKey && e.shiftKey && e.key === 'I') || 
@@ -109,9 +116,19 @@
                (e.ctrlKey && e.key === 'p') ||
                (e.ctrlKey && e.key === 'u')) {
                 e.preventDefault();
+                logActivity("CỐ TÌNH", "Học viên cố gắng dùng phím tắt bị cấm (F12/Copy/Print).");
                 alert("Hành động bị cấm trong phòng thi!");
             }
         });
+
+        // CƠ CHẾ GIÁM SÁT HOẠT ĐỘNG CHỌN ĐÁP ÁN
+        function monitorInputs() {
+            document.querySelectorAll('input[type=radio]').forEach(radio => {
+                radio.addEventListener('change', function(e) {
+                    logActivity("CHỌN TRẮC NGHIỆM", `Câu ${e.target.name} -> ${e.target.value}`);
+                });
+            });
+        }
 
         // 300 CÂU HỎI
         const questionBank = [
@@ -499,6 +516,13 @@
             });
         }
 
+        function requestFullScreen() {
+            let elem = document.documentElement;
+            if (elem.requestFullscreen) { elem.requestFullscreen().catch(err => console.log(err)); }
+            else if (elem.webkitRequestFullscreen) { elem.webkitRequestFullscreen(); } 
+            else if (elem.msRequestFullscreen) { elem.msRequestFullscreen(); } 
+        }
+
         // HÀM BẮT ĐẦU LÀM BÀI
         function startPractice() {
             const name = document.getElementById('studentName').value.trim();
@@ -509,12 +533,15 @@
                 return;
             }
 
+            logActivity("SYSTEM", "Bắt đầu làm bài. Học viên: " + name + " - " + cls);
+
             document.getElementById('start-screen').style.display = 'none';
             document.getElementById('test-container').style.display = 'block';
             document.getElementById('header-bar').style.display = 'flex';
             document.getElementById('display-name').innerText = `${name} (${cls})`;
 
             renderQuestions();
+            monitorInputs(); // Kích hoạt ghi log trắc nghiệm
             
             // Kích hoạt chống gian lận
             requestFullScreen();
@@ -529,10 +556,10 @@
             }, 1000);
         }
 
-        // CÁC HÀM XỬ LÝ CHỐNG GIAN LẬN
-        window.addEventListener('blur', () => { if(testActive && !isExamLocked) lockExam("Mất tiêu điểm (Dùng Alt+Tab, mở ứng dụng khác, hoặc click ra ngoài cửa sổ bài làm)."); });
-        document.addEventListener('visibilitychange', () => { if(testActive && document.visibilityState === 'hidden' && !isExamLocked) lockExam("Chuyển Tab trình duyệt hoặc thu nhỏ trình duyệt xuống dưới."); });
-        document.addEventListener('fullscreenchange', () => { if(testActive && !document.fullscreenElement && !isExamLocked) lockExam("Tự ý nhấn nút thoát khỏi chế độ Toàn Màn Hình."); });
+        // CÁC HÀM XỬ LÝ CHỐNG GIAN LẬN (CHÍNH XÁC NHƯ HỆ THỐNG TRƯỚC ĐÓ)
+        window.addEventListener('blur', () => { if(testActive && !isExamLocked) lockExam("Mất tiêu điểm (Alt+Tab hoặc click ra ngoài cửa sổ)."); });
+        document.addEventListener('visibilitychange', () => { if(testActive && document.visibilityState === 'hidden' && !isExamLocked) lockExam("Chuyển Tab trình duyệt hoặc ẩn cửa sổ."); });
+        document.addEventListener('fullscreenchange', () => { if(testActive && !document.fullscreenElement && !isExamLocked) lockExam("Tự ý thoát chế độ Toàn Màn Hình."); });
 
         function lockExam(reason) {
             if(!testActive || isExamLocked) return;
@@ -543,10 +570,13 @@
             document.getElementById('blocker-violation-count').innerText = violations;
             document.getElementById('cheat-reason').innerText = "Nguyên nhân: " + reason;
             
+            logActivity("VI PHẠM LẦN " + violations, reason);
+            
             if(violations >= maxViolations) {
-                document.getElementById('cheat-blocker').innerHTML = "<h1 style='font-size:4rem'>BÀI TẬP BỊ HỦY!</h1><h2>Em đã vi phạm quy chế giám sát quá 3 lần. Hệ thống đang tự động báo cáo cho giáo viên...</h2>";
+                document.getElementById('cheat-blocker').innerHTML = "<h1 style='font-size:4rem'>BÀI TẬP BỊ HỦY!</h1><h2>Em đã vi phạm quy chế giám sát quá 3 lần. Hệ thống đang tự động thu bài...</h2>";
                 document.getElementById('cheat-blocker').style.display = 'flex';
-                setTimeout(() => forceSubmitDueToCheat(), 2000); 
+                logActivity("HỆ THỐNG", "HỦY BÀI do vi phạm quá 3 lần.");
+                setTimeout(() => checkAnswers(true), 2000); // Gửi bài khẩn cấp dưới trạng thái gian lận (isForce = true)
                 return;
             }
             document.getElementById('cheat-blocker').style.display = 'flex';
@@ -558,49 +588,74 @@
                 elem.requestFullscreen().then(() => {
                     document.getElementById('cheat-blocker').style.display = 'none';
                     isExamLocked = false;
+                    logActivity("HỆ THỐNG", "Học viên quay lại toàn màn hình.");
                 }).catch(err => {
                     alert("Trình duyệt từ chối. Hãy ấn lại nút này lần nữa để tiếp tục!");
                 });
             }
         }
 
-        function forceSubmitDueToCheat() {
-            testActive = false;
-            clearInterval(timerInterval);
-            let m = Math.floor(secondsElapsed / 60);
-            let s = secondsElapsed % 60;
-            let timeString = `${m} phút ${s} giây`;
-            document.getElementById('submit-btn').style.display = 'none';
-            document.getElementById('questions-area').style.display = 'none';
-            sendReportEmail(0, 300, 0, timeString); // Gửi điểm 0 do gian lận
-        }
-
-        // HÀM CHẤM ĐIỂM
-        function checkAnswers() {
-            submitAttempts++;
-            document.getElementById('attempt-count').innerText = submitAttempts;
+        // HÀM CHẤM ĐIỂM BẮT BUỘC 100%
+        function checkAnswers(isForce = false) {
+            if (!isForce) {
+                submitAttempts++;
+                document.getElementById('attempt-count').innerText = submitAttempts;
+            }
 
             let missing = false;
             let correctCount = 0;
             const questions = questionBank.filter(q => q.type !== "title");
             let totalQuestions = questions.length;
+            let wrongQuestions = [];
+
+            // Reset viền màu trước khi chấm (phòng trường hợp ấn nộp lại)
+            document.querySelectorAll('.question-block').forEach(block => {
+                block.style.border = 'none';
+                block.style.borderLeft = '5px solid #3498db'; 
+            });
 
             for (let q of questions) {
                 let selected = document.querySelector(`input[name="${q.id}"]:checked`);
                 if (!selected) {
                     missing = true;
-                    break; 
+                } else {
+                    if (selected.value === q.answer) {
+                        correctCount++;
+                    } else {
+                        wrongQuestions.push(q.id); // Lưu lại những câu làm sai
+                    }
                 }
             }
 
-            if (missing) {
-                alert("⚠️ CẢNH BÁO: Em vẫn chưa chọn đáp án cho tất cả các câu. Hãy kéo lên kiểm tra lại và hoàn thành trọn vẹn 300 câu trước khi nộp bài nhé!");
-                return; 
+            // Nếu người dùng bấm nộp bình thường (không phải bị force submit do gian lận)
+            if (!isForce) {
+                if (missing) {
+                    alert("⚠️ CẢNH BÁO: Em vẫn chưa chọn đáp án cho tất cả các câu. Hãy kéo lên kiểm tra lại!");
+                    return; 
+                }
+
+                if (correctCount < totalQuestions) {
+                    alert(`⚠️ CẢNH BÁO: Em mới làm đúng ${correctCount}/${totalQuestions} câu. Em phải làm ĐÚNG HOÀN TOÀN 300 CÂU mới được nộp bài!\n\nCác câu sai đã được bôi viền đỏ. Hãy kiểm tra và chọn lại đáp án nhé.`);
+                    // Bôi đỏ những câu sai để học sinh có thể sửa chữa
+                    wrongQuestions.forEach(id => {
+                        let block = document.getElementById(`block-${id}`);
+                        if(block) {
+                            block.style.border = '2px solid red';
+                            block.style.borderLeft = '5px solid red';
+                        }
+                    });
+                    logActivity("HỆ THỐNG", `Nộp bài thất bại (Lần ${submitAttempts}). Sai ${totalQuestions - correctCount} câu.`);
+                    return; 
+                }
+
+                let confirmSubmit = confirm("Tuyệt vời! Em đã hoàn thành xuất sắc toàn bộ 300 câu chính xác. Có chắc chắn muốn nộp bài để xem đáp án giải thích chi tiết không?");
+                if (!confirmSubmit) return;
+                logActivity("HỆ THỐNG", "Học viên tự nguyện nộp bài thành công.");
+            } else {
+                logActivity("HỆ THỐNG", "Hệ thống tự động thu bài do vi phạm.");
             }
 
-            let confirmSubmit = confirm("Em đã hoàn thành đủ 300 câu. Có chắc chắn muốn nộp bài để xem điểm và đáp án chi tiết không?");
-            if (!confirmSubmit) return;
-
+            // ---- CHÍNH THỨC NỘP BÀI ----
             clearInterval(timerInterval);
             testActive = false; 
 
@@ -634,12 +689,10 @@
                     }
                 });
 
-                if (userAns === q.answer) {
-                    correctCount++;
-                }
-
-                if (q.explain) {
+                // Chỉ tạo div giải thích nếu nó chưa tồn tại (tránh lỗi spam thẻ div)
+                if (q.explain && !qBlock.querySelector('.explain-box')) {
                     let explainDiv = document.createElement('div');
+                    explainDiv.className = 'explain-box';
                     explainDiv.style.marginTop = '15px';
                     explainDiv.style.padding = '15px';
                     explainDiv.style.backgroundColor = '#eaf2f8';
@@ -677,7 +730,7 @@
             sendReportEmail(correctCount, totalQuestions, finalScore, timeString);
         }
 
-        // TỰ ĐỘNG GỬI EMAIL BÁO CÁO CHO GIÁO VIÊN
+        // TỰ ĐỘNG GỬI EMAIL BÁO CÁO CHO GIÁO VIÊN QUA WEB3FORMS
         function sendReportEmail(correctCount, totalQuestions, finalScore, timeString) {
             const name = document.getElementById('studentName').value;
             const cls = document.getElementById('studentClass').value;
@@ -689,18 +742,24 @@
             report += `THỜI GIAN LÀM BÀI: ${timeString}\n`;
             report += `SỐ LẦN BẤM NỘP BÀI: ${submitAttempts} lần\n`;
             report += `SỐ LẦN VI PHẠM GIÁM SÁT MÀN HÌNH: ${violations}/3 lần\n`;
+            report += "---------------------------\n";
+            report += "LỊCH SỬ HÀNH VI CỦA THÍ SINH:\n";
+            report += activityLog.join("\n");
 
             fetch("https://api.web3forms.com/submit", {
                 method: "POST",
                 headers: { "Content-Type": "application/json", "Accept": "application/json" },
                 body: JSON.stringify({
-                    access_key: "8f705510-1c71-4183-88e5-a9f1b54c0251", // MÃ API CỦA EM
+                    access_key: "8f705510-1c71-4183-88e5-a9f1b54c0251", // MÃ API
+                    email: "bot-hethong@thitructuyen.com", // Đã đồng bộ địa chỉ Mail hệ thống
                     subject: `[Điểm: ${finalScore}] ${cls} - ${name} (Unit 5-6)`,
                     from_name: "Hệ Thống Ôn Luyện Trắc Nghiệm",
                     message: report.replace(/\n/g, "<br>")
                 })
             }).then(response => {
-                console.log("Email báo cáo đã được gửi ngầm thành công!");
+                if (response.status == 200) {
+                    console.log("Email báo cáo đã được gửi ngầm thành công!");
+                }
             }).catch(error => console.log(error));
         }
     </script>
