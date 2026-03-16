@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ôn Tập Từ Vựng Unit 5-6</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; margin: 0; padding: 0; color: #333; user-select: none; }
+        
+        #start-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #2c3e50; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; }
+        #start-screen h1 { margin-bottom: 10px; text-align: center; color: #f1c40f; }
+        #start-screen .subtitle { font-size: 20px; margin-bottom: 30px; }
+        #start-screen ul { font-size: 18px; margin-bottom: 30px; max-width: 650px; line-height: 1.8; background: rgba(255,255,255,0.1); padding: 20px 40px; border-radius: 10px; }
+        .btn-start { padding: 15px 40px; font-size: 20px; background-color: #27ae60; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; text-transform: uppercase; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
+        .btn-start:hover { background-color: #2ecc71; transform: scale(1.05); }
+        
+        #student-info { display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; width: 100%; max-width: 400px; }
+        #student-info input { padding: 15px; font-size: 18px; border-radius: 5px; border: none; text-align: center; }
+
+        .header-bar { position: fixed; top: 0; left: 0; width: 100%; background: #34495e; color: white; padding: 15px 0; text-align: center; font-size: 20px; font-weight: bold; z-index: 1000; display: flex; justify-content: space-around; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        #timer { color: #f1c40f; font-size: 24px; }
+        #attempt-box { color: #e74c3c; font-size: 18px; background: white; padding: 5px 15px; border-radius: 20px; }
+        
+        #test-container { display: none; max-width: 900px; margin: 100px auto 40px; background: white; padding: 40px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
+        
+        .unit-title { text-align: center; color: #2980b9; border-bottom: 2px dashed #bdc3c7; padding-bottom: 10px; margin-top: 40px; margin-bottom: 20px; text-transform: uppercase; }
+        
+        .question-block { margin-bottom: 25px; padding: 20px; background: #f9fbff; border-radius: 8px; border-left: 5px solid #3498db; transition: 0.2s; }
+        .question-block:hover { background: #f1f6ff; }
+        .question-text { font-weight: bold; margin-bottom: 15px; font-size: 18px; color: #2c3e50; line-height: 1.5; }
+        .options-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .options-group label { display: block; cursor: pointer; font-size: 16px; padding: 12px; border-radius: 6px; background: white; border: 1px solid #dcdde1; transition: 0.2s; }
+        .options-group label:hover { border-color: #3498db; background: #eaf4fc; }
+        .options-group input[type="radio"] { margin-right: 10px; transform: scale(1.2); cursor: pointer; }
+        
+        #submit-btn { display: block; width: 100%; padding: 20px; font-size: 22px; background: #e67e22; color: white; border: none; border-radius: 8px; cursor: pointer; margin-top: 40px; font-weight: bold; text-transform: uppercase; box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3); transition: 0.3s; }
+        #submit-btn:hover { background: #d35400; }
+
+        /* Giao diện khi hoàn thành */
+        #success-screen { display: none; text-align: center; padding: 50px 20px; }
+        #success-screen h1 { color: #27ae60; font-size: 40px; margin-bottom: 10px; }
+        #success-screen p { font-size: 20px; line-height: 1.6; color: #555; }
+
+        /* Màn hình PHONG TỎA (Chống gian lận) */
+        #cheat-blocker { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(192, 57, 43, 0.98); color: white; z-index: 100000; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; box-sizing: border-box; }
+        #cheat-blocker h1 { font-size: 3rem; margin-bottom: 10px; text-transform: uppercase; }
+        #cheat-blocker p { font-size: 1.5rem; margin-bottom: 20px; max-width: 800px; }
+        .btn-resume { padding: 15px 30px; font-size: 20px; background: #f1c40f; color: #2c3e50; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .btn-resume:hover { background: #f39c12; }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+    
+
+    <div id="start-screen">
+        <h1>ÔN TẬP TỪ VỰNG: UNIT 5 & 6</h1>
+        <div class="subtitle">Tiếng Anh 10 - Friends Global</div>
+        <div id="student-info">
+            <input type="text" id="studentName" placeholder="Nhập Họ và Tên của em" required>
+            <input type="text" id="studentClass" placeholder="Nhập Lớp" required>
+        </div>
+        <ul>
+            <li><strong style="color:#f1c40f;">MỤC TIÊU:</strong> Ôn luyện triệt để Phrasal verbs, Word Families, Idioms & Từ vựng Unit 5-6.</li>
+            <li><strong style="color:#e74c3c;">LUẬT THÉP 100%:</strong> Em phải chọn đúng TẤT CẢ các câu mới được nộp bài.</li>
+            <li><strong style="color:#e74c3c;">CƠ CHẾ XÓA SẠCH:</strong> Nếu em nộp sai <b>quá 3 lần</b>, hệ thống sẽ xóa toàn bộ đáp án em đã chọn và bắt em làm lại từ đầu để ghi nhớ sâu hơn!</li>
+            <li><strong style="color:#3498db;">THỜI GIAN:</strong> Hệ thống sẽ bấm giờ xem em mất bao lâu để vượt qua thử thách này và báo cáo về cho giáo viên.</li>
+        </ul>
+        <button class="btn-start" onclick="startPractice()">BẮT ĐẦU LÀM BÀI</button>
+    </div>
+
+    <div class="header-bar" id="header-bar" style="display:none;">
+        <div>Học viên: <span id="display-name"></span></div>
+        <div id="timer">⏱ Thời gian: 00:00</div>
+        <div id="warning-box">Số lần nộp sai: <span id="attempt-count">0</span>/3</div>
+    </div>
+
+    <div id="test-container">
+        <div id="questions-area">
+            </div>
+        <button id="submit-btn" onclick="checkAnswers()">HOÀN TẤT BÀI TẬP</button>
+
+        <div id="success-screen">
+            <h1>🏆 XUẤT SẮC!</h1>
+            <p>Em đã hoàn thành chính xác 100% toàn bộ từ vựng Unit 5 & 6.</p>
+            <p>Thời gian hoàn thành: <b id="final-time" style="color:#e67e22; font-size:24px;"></b></p>
+            <p>Số lần bị Reset (làm lại từ đầu): <b id="final-resets"></b> lần</p>
+            <p style="color: #27ae60; font-weight:bold; margin-top:20px;">Báo cáo thời gian của em đã được gửi tự động đến Giáo viên.</p>
+        </div>
+    </div>
+
+    <script>
+        // KHO DỮ LIỆU TỪ VỰNG TINH TÚY (60 CÂU BAO QUÁT UNIT 5 & 6)
+            const questionBank = [
+    // ================= PHẦN 1: UNIT 5 - AMBITION =================
+    // A. Từ vựng về Nghề nghiệp & Hoạt động công việc
+    { type: "title", unit: "PHẦN 1: UNIT 5 - AMBITION" },
+    { id: "q1", text: "A(n) _______ is someone whose job is to design new buildings.", options: {"A": "architect", "B": "solicitor", "C": "paramedic", "D": "programmer"}, answer: "A", explain: "Câu cần từ chỉ người thiết kế tòa nhà ('design new buildings'). Các lựa chọn khác: solicitor (luật sư), paramedic (nhân viên y tế cứu thương), programmer (lập trình viên) đều không đúng chuyên môn." },
+    { id: "q2", text: "If you have a toothache, you should make an appointment with a _______.", options: {"A": "receptionist", "B": "dentist", "C": "travel agent", "D": "hairdresser"}, answer: "B", explain: "Khóa ngữ cảnh là 'toothache' (đau răng), do đó phải gặp nha sĩ. Receptionist (lễ tân), travel agent (nhân viên du lịch), hairdresser (thợ tạo mẫu tóc) không liên quan đến y tế." },
+    { id: "q3", text: "A _______ helps people who are injured or ill in an emergency.", options: {"A": "sales assistant", "B": "farm worker", "C": "paramedic", "D": "builder"}, answer: "C", explain: "'Helps people injured or ill in an emergency' (giúp người bị thương/bệnh trong trường hợp khẩn cấp). Sales assistant (nhân viên bán hàng), farm worker (nông dân), builder (thợ xây) không có chuyên môn cấp cứu." },
+    { id: "q4", text: "Someone who gives advice to people about the law and speaks for them in court is a _______.", options: {"A": "solicitor", "B": "journalist", "C": "locksmith", "D": "engineer"}, answer: "A", explain: "'Advice about the law and speaks in court' (tư vấn luật và bào chữa trước tòa) là công việc của luật sư. Journalist (nhà báo), locksmith (thợ sửa khóa), engineer (kỹ sư) sai chức năng." },
+    { id: "q5", text: "A _______ cuts and styles people's hair.", options: {"A": "cleaner", "B": "hairdresser", "C": "waiter", "D": "sports coach"}, answer: "B", explain: "'Cuts and styles hair' là đặc trưng nghề nghiệp của thợ làm tóc. Cleaner (lao công), waiter (bồi bàn), sports coach (huấn luyện viên) không phù hợp." },
+    { id: "q6", text: "If you want to book a holiday, you can go to a _______.", options: {"A": "travel agent", "B": "estate agent", "C": "receptionist", "D": "sales assistant"}, answer: "A", explain: "'Book a holiday' (đặt chuyến đi nghỉ). Estate agent (nhân viên bất động sản), receptionist (lễ tân), sales assistant (nhân viên bán hàng) không có dịch vụ này." },
+    { id: "q7", text: "The person who greets visitors as they walk into a hotel or office is a _______.", options: {"A": "farm worker", "B": "receptionist", "C": "cleaner", "D": "programmer"}, answer: "B", explain: "'Greets visitors' (chào đón khách) khi họ bước vào khách sạn/văn phòng. Farm worker (nông dân), cleaner (lao công), programmer (lập trình viên) sai ngữ cảnh." },
+    { id: "q8", text: "A(n) _______ writes computer programs.", options: {"A": "engineer", "B": "programmer", "C": "pilot", "D": "journalist"}, answer: "B", explain: "'Writes computer programs' (viết chương trình máy tính). Engineer (kỹ sư cơ khí/xây dựng), pilot (phi công), journalist (nhà báo) không phù hợp." },
+    { id: "q9", text: "A _______ repairs broken locks or makes new keys.", options: {"A": "builder", "B": "locksmith", "C": "groundskeeper", "D": "gardener"}, answer: "B", explain: "'Repairs broken locks or makes new keys' (sửa khóa hỏng hoặc đánh chìa mới). Builder (thợ xây), groundskeeper (người bảo vệ cảnh quan), gardener (người làm vườn) không đúng chuyên môn." },
+    { id: "q10", text: "The person who takes care of a sports ground or park is a _______.", options: {"A": "groundskeeper", "B": "estate agent", "C": "farm worker", "D": "cleaner"}, answer: "A", explain: "'Takes care of a sports ground or park' (chăm sóc sân thể thao/công viên). Estate agent (đại lý bất động sản), farm worker (nông dân), cleaner (lao công) sai chức năng." },
+    { id: "q11", text: "If you want to buy or sell a house, a(n) _______ will help you.", options: {"A": "travel agent", "B": "estate agent", "C": "solicitor", "D": "architect"}, answer: "B", explain: "'Buy or sell a house' (mua bán nhà). Travel agent (nhân viên du lịch), solicitor (luật sư), architect (kiến trúc sư) không chuyên môi giới mua bán nhà." },
+    { id: "q12", text: "A _______ writes news reports for newspapers, magazines, television, or radio.", options: {"A": "journalist", "B": "programmer", "C": "travel agent", "D": "receptionist"}, answer: "A", explain: "'Writes news reports' (viết bản tin) cho báo, đài. Các nghề nghiệp khác ở B, C, D không làm công việc viết lách tin tức." },
+    { id: "q13", text: "Someone who builds houses or other structures is a _______.", options: {"A": "locksmith", "B": "builder", "C": "engineer", "D": "architect"}, answer: "B", explain: "'Builds houses or other structures' (xây nhà/công trình). Locksmith (thợ khóa), engineer (kỹ sư), architect (người thiết kế, không trực tiếp xây) đều sai." },
+    { id: "q14", text: "A _______ works in a shop and helps customers find what they need.", options: {"A": "sales assistant", "B": "waiter", "C": "receptionist", "D": "cleaner"}, answer: "A", explain: "'Works in a shop and helps customers' (làm việc tại cửa hàng và giúp khách). Nghề waiter làm ở nhà hàng, receptionist ở sảnh, cleaner lo vệ sinh." },
+    { id: "q15", text: "A _______ serves food and drinks to customers in a restaurant.", options: {"A": "farm worker", "B": "waiter", "C": "hairdresser", "D": "paramedic"}, answer: "B", explain: "'Serves food and drinks... in a restaurant' (phục vụ đồ ăn thức uống tại nhà hàng). Các nghề khác sai môi trường làm việc." },
+    { id: "q16", text: "If your job involves standing for many hours, you are 'on your _______'.", options: {"A": "toes", "B": "legs", "C": "feet", "D": "knees"}, answer: "C", explain: "Thành ngữ 'on your feet' nghĩa là phải đứng nhiều (làm việc chân tay, đi lại liên tục). 'On your toes/legs/knees' không đúng cụm từ cố định." },
+    { id: "q17", text: "I don't like working in an office. I prefer to work _______ in the fresh air.", options: {"A": "outdoors", "B": "indoors", "C": "inside", "D": "enclosed"}, answer: "A", explain: "Trái nghĩa với 'in an office' và đi kèm 'in the fresh air' (trong không khí trong lành). Indoors và inside là trong nhà, enclosed là khép kín." },
+    { id: "q18", text: "A receptionist spends a lot of time _______ the phone.", options: {"A": "calling", "B": "answering", "C": "speaking", "D": "doing"}, answer: "B", explain: "Cụm từ 'answer the phone' (nghe điện thoại). Không dùng 'calling the phone', 'speaking the phone' hay 'doing the phone'." },
+    { id: "q19", text: "In my job, I have to _______ with the public a lot.", options: {"A": "work", "B": "serve", "C": "deal", "D": "make"}, answer: "C", explain: "Cụm 'deal with the public' (làm việc/giao tiếp xử lý vấn đề với công chúng/khách hàng). Work cần giới từ with nhưng deal with mang nghĩa đặc thù; serve không đi với with." },
+    { id: "q20", text: "Farm workers usually work very _______ hours during the harvest season.", options: {"A": "big", "B": "tall", "C": "long", "D": "high"}, answer: "C", explain: "Cụm từ 'work long hours' (làm việc nhiều giờ liền). Không dùng 'big hours', 'tall hours' hay 'high hours'." },
+    { id: "q21", text: "A pilot has to _______ a lot for their job, flying to different countries.", options: {"A": "travel", "B": "move", "C": "walk", "D": "drive"}, answer: "A", explain: "Phi công phải 'travel' (di chuyển/đi lại) đến nhiều quốc gia. Các từ move (dọn đi), walk (đi bộ), drive (lái xe) sai tính chất nghề nghiệp." },
+    { id: "q22", text: "Nurses and doctors usually have to _______ a uniform.", options: {"A": "dress", "B": "put", "C": "wear", "D": "hold"}, answer: "C", explain: "Cụm 'wear a uniform' (mặc đồng phục). Dress thường dùng 'dress in...', put phải là 'put on' (mặc vào, không phải trạng thái mặc), hold sai nghĩa." },
+    { id: "q23", text: "I like my job because I'm part of a _______; we all work together.", options: {"A": "group", "B": "team", "C": "class", "D": "band"}, answer: "B", explain: "Cụm 'part of a team' (một phần của đội ngũ) đi kèm giải thích 'we all work together'. Group, class, band không phải cụm từ chuẩn trong môi trường công sở chung." },
+    { id: "q24", text: "Waiters and sales assistants _______ customers directly.", options: {"A": "deal", "B": "serve", "C": "give", "D": "offer"}, answer: "B", explain: "Bồi bàn và nhân viên bán hàng trực tiếp 'serve customers' (phục vụ khách hàng). Deal phải đi với with; give/offer thiếu nghĩa tổng quát của việc phục vụ." },
+    { id: "q25", text: "Programmers and IT workers _______ a computer for most of the day.", options: {"A": "use", "B": "make", "C": "play", "D": "do"}, answer: "A", explain: "'Use a computer' (sử dụng máy tính). Lập trình viên không 'make' (sản xuất vật lý), 'play' (chơi), hay 'do' máy tính." },
+    { id: "q26", text: "If you have a standard office job, you usually work _______.", options: {"A": "nine-to-five", "B": "eight-to-four", "C": "ten-to-six", "D": "seven-to-three"}, answer: "A", explain: "Cụm từ cố định 'a nine-to-five job' chỉ công việc hành chính văn phòng chuẩn (từ 9 giờ sáng đến 5 giờ chiều). Các lựa chọn khác không phải thành ngữ tiếng Anh." },
+    { id: "q27", text: "Teachers and sports coaches enjoy working _______ children.", options: {"A": "for", "B": "with", "C": "to", "D": "about"}, answer: "B", explain: "'Work with children' (làm việc cùng/liên quan đến trẻ em). Giới từ chuẩn xác để chỉ đối tượng mình tương tác." },
+    { id: "q28", text: "A successful CEO can _______ a lot of money.", options: {"A": "win", "B": "earn", "C": "take", "D": "collect"}, answer: "B", explain: "Cụm 'earn money' (kiếm tiền bằng sức lao động). Win (thắng giải), take (lấy), collect (thu thập) sai bản chất việc nhận lương." },
+    { id: "q29", text: "A salesperson often has to _______ phone calls to clients.", options: {"A": "do", "B": "answer", "C": "make", "D": "have"}, answer: "C", explain: "Cụm 'make phone calls' (gọi điện thoại). Người bán hàng phải chủ động gọi cho khách nên dùng make, không dùng do hay answer (trả lời)." },
+    { id: "q30", text: "Some people prefer to work _______ rather than in a team.", options: {"A": "lonely", "B": "alone", "C": "single", "D": "single-handed"}, answer: "B", explain: "Trái nghĩa với 'in a team' (làm việc nhóm) là 'work alone' (làm việc độc lập). Lonely (cô đơn), single (độc thân), single-handed (đơn thương độc mã)." },
+
+    // B. Tính từ miêu tả công việc
+    { id: "q31", text: "A _______ job makes you feel satisfied that you have done something important or useful.", options: {"A": "rewarding", "B": "repetitive", "C": "stressful", "D": "tiring"}, answer: "A", explain: "Ngữ cảnh 'feel satisfied... important or useful' (thỏa mãn vì làm điều có ích) = rewarding. Repetitive (lặp lại), stressful (áp lực), tiring (mệt) sai nghĩa." },
+    { id: "q32", text: "A programmer's job can be very _______; you need to think of new and original ideas.", options: {"A": "varied", "B": "creative", "C": "repetitive", "D": "stressful"}, answer: "B", explain: "'Think of new and original ideas' (nghĩ ra ý tưởng mới) = creative (sáng tạo). Varied (đa dạng) không nhấn mạnh việc tạo ra cái mới." },
+    { id: "q33", text: "Doing the exact same task every day makes the job very _______.", options: {"A": "rewarding", "B": "repetitive", "C": "challenging", "D": "varied"}, answer: "B", explain: "'Exact same task every day' (cùng một nhiệm vụ mỗi ngày) = repetitive (lặp đi lặp lại)." },
+    { id: "q34", text: "A _______ job tests your skills and abilities in an interesting way.", options: {"A": "challenging", "B": "boring", "C": "repetitive", "D": "tiring"}, answer: "A", explain: "'Tests your skills and abilities' (thử thách kỹ năng) = challenging. Boring, repetitive, tiring không mô tả việc thử thách năng lực." },
+    { id: "q35", text: "Paramedics often have a _______ job because they deal with emergencies and life-or-death situations.", options: {"A": "relaxing", "B": "stressful", "C": "repetitive", "D": "creative"}, answer: "B", explain: "'Deal with emergencies and life-or-death situations' (xử lý tình huống sinh tử) luôn gây áp lực tâm lý cao = stressful." },
+    { id: "q36", text: "If your job involves a lot of different activities, it is _______.", options: {"A": "repetitive", "B": "varied", "C": "tiring", "D": "boring"}, answer: "B", explain: "'A lot of different activities' (nhiều hoạt động khác nhau) = varied (đa dạng)." },
+    { id: "q37", text: "Working long hours on your feet can be physically _______.", options: {"A": "tiring", "B": "rewarding", "C": "varied", "D": "creative"}, answer: "A", explain: "'Working long hours on your feet' vắt kiệt sức lực nên nó 'physically tiring' (mệt mỏi thể chất)." },
+    { id: "q38", text: "Teaching is a _______ profession because you see your students grow and succeed.", options: {"A": "repetitive", "B": "stressful", "C": "rewarding", "D": "tiring"}, answer: "C", explain: "'See your students grow and succeed' mang lại cảm giác mãn nguyện, có giá trị = rewarding." },
+    { id: "q39", text: "The work of a cleaner can be _______ if they have to clean the same rooms every single day.", options: {"A": "repetitive", "B": "varied", "C": "creative", "D": "challenging"}, answer: "A", explain: "'Clean the same rooms every single day' thể hiện tính chất lặp lại chán nản = repetitive." },
+    { id: "q40", text: "An architect needs to be highly _______ to design unique buildings.", options: {"A": "tiring", "B": "repetitive", "C": "creative", "D": "stressful"}, answer: "C", explain: "'Design unique buildings' (thiết kế các tòa nhà độc đáo) đòi hỏi tính sáng tạo cao = creative." },
+
+    // C. Cụm từ (Collocations) & Tìm việc
+    { id: "q41", text: "If you need money, you should _______ for a job.", options: {"A": "look", "B": "see", "C": "find", "D": "watch"}, answer: "A", explain: "Cụm động từ 'look for a job' (tìm việc). See/Watch/Find không kết hợp với giới từ for trong ngữ cảnh này." },
+    { id: "q42", text: "I was reading the newspaper when I _______ an advertisement for a gardener.", options: {"A": "looked", "B": "noticed", "C": "made", "D": "sent"}, answer: "B", explain: "'Notice an advertisement' (tình cờ để ý thấy một mẩu quảng cáo). Looked cần giới từ at." },
+    { id: "q43", text: "After finding the perfect job online, she decided to _______ in an application.", options: {"A": "give", "B": "post", "C": "send", "D": "write"}, answer: "C", explain: "Cụm 'send in an application' (nộp đơn ứng tuyển). Give, post, write không tạo thành phrasal verb đúng với in mang nghĩa nộp đơn." },
+    { id: "q44", text: "The manager called me yesterday to _______ me the job!", options: {"A": "give", "B": "offer", "C": "take", "D": "make"}, answer: "B", explain: "Cụm 'offer someone a job' (đề nghị ai đó nhận công việc). Offer là thuật ngữ nhân sự chuẩn xác nhất." },
+    { id: "q45", text: "I'm so excited to _______ the team at the new IT company.", options: {"A": "join", "B": "connect", "C": "enter", "D": "link"}, answer: "A", explain: "'Join the team' (gia nhập đội ngũ). Connect, enter, link không dùng để chỉ việc trở thành một phần của nhóm nhân sự." },
+    { id: "q46", text: "If you are feeling exhausted and sick, you should _______ a day off.", options: {"A": "make", "B": "do", "C": "take", "D": "have"}, answer: "C", explain: "Cụm 'take a day off' (xin nghỉ một ngày). Đây là collocation cố định." },
+    { id: "q47", text: "He decided to _______ a break between his old job and his new one.", options: {"A": "make", "B": "take", "C": "do", "D": "get"}, answer: "B", explain: "'Take a break' (nghỉ ngơi, nghỉ phép giữa chừng). Các động từ khác không kết hợp đúng." },
+    { id: "q48", text: "Many teenagers look for a part-time job to earn extra _______.", options: {"A": "salary", "B": "wage", "C": "money", "D": "coins"}, answer: "C", explain: "Cụm chung 'earn extra money' (kiếm thêm tiền). Salary/Wage là lương nhưng money đi kèm extra tự nhiên nhất." },
+    { id: "q49", text: "Working as a team helps you develop personal _______.", options: {"A": "abilities", "B": "talents", "C": "skills", "D": "capacities"}, answer: "C", explain: "'Personal skills' (kỹ năng cá nhân). Abilities/Talents thiên về thiên bẩm, skills là kỹ năng rèn luyện được." },
+    { id: "q50", text: "She is going to write a formal application _______ to the manager.", options: {"A": "letter", "B": "note", "C": "text", "D": "message"}, answer: "A", explain: "'Application letter' (thư xin việc). Note, text, message không phải văn bản trang trọng." },
+
+    // D. Tiền tố & Từ loại
+    { id: "q51", text: "The prefix 'co-' means _______.", options: {"A": "again", "B": "with/together", "C": "former", "D": "half"}, answer: "B", explain: "Tiền tố 'co-' (ví dụ co-worker, co-pilot) mang nghĩa làm cùng nhau." },
+    { id: "q52", text: "The prefix 're-' in 'rewrite' means to write something _______.", options: {"A": "again", "B": "after", "C": "too much", "D": "too little"}, answer: "A", explain: "Tiền tố 're-' (rewrite, replay) mang nghĩa thực hiện lại hành động." },
+    { id: "q53", text: "If a meal is cooked for too long, it is _______.", options: {"A": "undercooked", "B": "overcooked", "C": "recooked", "D": "semi-cooked"}, answer: "B", explain: "'Cooked for too long' tức là nấu quá tay/chín quá. Tiền tố 'over-' chỉ sự vượt quá mức cần thiết." },
+    { id: "q54", text: "A shape that is half of a circle is called a _______.", options: {"A": "multi-circle", "B": "semicircle", "C": "co-circle", "D": "over-circle"}, answer: "B", explain: "Tiền tố 'semi-' mang nghĩa là một nửa. Semicircle = nửa hình tròn." },
+    { id: "q55", text: "A society with many different cultures is _______.", options: {"A": "multiculture", "B": "multicultural", "C": "overcultural", "D": "subcultural"}, answer: "B", explain: "Tiền tố 'multi-' mang nghĩa nhiều/đa dạng. Multicultural = đa văn hóa. Chú ý hậu tố tính từ '-al'." },
+    { id: "q56", text: "The period after a war is referred to as the _______ era.", options: {"A": "pre-war", "B": "post-war", "C": "ex-war", "D": "re-war"}, answer: "B", explain: "Tiền tố 'post-' mang nghĩa sau (after). Post-war = thời kỳ hậu chiến." },
+    { id: "q57", text: "A _______ is an extremely small electronic chip used in computers.", options: {"A": "megachip", "B": "macrochip", "C": "microchip", "D": "multichip"}, answer: "C", explain: "Tiền tố 'micro-' mang nghĩa siêu nhỏ. 'Macro/Mega' mang nghĩa khổng lồ." },
+    { id: "q58", text: "If you get paid too little for your hard work, you are _______.", options: {"A": "overpaid", "B": "underpaid", "C": "repaid", "D": "co-paid"}, answer: "B", explain: "'Paid too little' tức là bị trả lương thấp. Dùng tiền tố 'under-'." },
+    { id: "q59", text: "My _______ (former wife) and I are still good friends.", options: {"A": "ex-wife", "B": "co-wife", "C": "post-wife", "D": "semi-wife"}, answer: "A", explain: "Tiền tố 'ex-' mang nghĩa người cũ/cựu (former)." },
+    { id: "q60", text: "The pilot and the _______ fly the plane together.", options: {"A": "ex-pilot", "B": "co-pilot", "C": "under-pilot", "D": "multi-pilot"}, answer: "B", explain: "Cùng lái máy bay với phi công chính là phi công phụ (co-pilot, 'co-' = together)." },
+    { id: "q61", text: "If you sleep longer than you intended to, you _______.", options: {"A": "undersleep", "B": "oversleep", "C": "resleep", "D": "post-sleep"}, answer: "B", explain: "'Sleep longer than intended' = ngủ quên, quá giấc. Dùng 'over-'." },
+    { id: "q62", text: "The ability to do many things at the same time is called _______.", options: {"A": "multi-tasking", "B": "over-tasking", "C": "co-tasking", "D": "re-tasking"}, answer: "A", explain: "'Do many things at the same time' = đa nhiệm (multi-tasking)." },
+    { id: "q63", text: "Noun form of 'attempt' is _______.", options: {"A": "attempt", "B": "attemptation", "C": "attemptment", "D": "attemptness"}, answer: "A", explain: "Từ 'attempt' vừa là động từ vừa là danh từ (sự nỗ lực)." },
+    { id: "q64", text: "Noun form of 'achieve' is _______.", options: {"A": "achieval", "B": "achievement", "C": "achieve", "D": "achieving"}, answer: "B", explain: "achieve -> achievement (thành tựu)." },
+    { id: "q65", text: "Noun form of 'explore' is _______.", options: {"A": "explorement", "B": "exploration", "C": "exploring", "D": "explority"}, answer: "B", explain: "explore -> exploration (sự khám phá)." },
+    { id: "q66", text: "Noun form of 'need' is _______.", options: {"A": "need", "B": "needment", "C": "needness", "D": "needation"}, answer: "A", explain: "'need' vừa là động từ vừa là danh từ (nhu cầu)." },
+    { id: "q67", text: "Noun form of 'experience' is _______.", options: {"A": "experience", "B": "experiencement", "C": "experiencation", "D": "experiencing"}, answer: "A", explain: "'experience' vừa là động từ vừa là danh từ (kinh nghiệm)." },
+    { id: "q68", text: "Noun form of 'dream' is _______.", options: {"A": "dream", "B": "dreamment", "C": "dreamy", "D": "dreamation"}, answer: "A", explain: "'dream' vừa là động từ vừa là danh từ (giấc mơ)." },
+    { id: "q69", text: "Noun form of 'fail' is _______.", options: {"A": "fail", "B": "failure", "C": "failment", "D": "failness"}, answer: "B", explain: "fail -> failure (sự thất bại). Hậu tố '-ure'." },
+    { id: "q70", text: "Noun form of 'translate' is _______.", options: {"A": "translation", "B": "translature", "C": "translatement", "D": "translating"}, answer: "A", explain: "translate -> translation (bản dịch)." },
+    { id: "q71", text: "Noun form of 'argue' is _______.", options: {"A": "argument", "B": "arguation", "C": "argure", "D": "arguness"}, answer: "A", explain: "argue -> argument (cuộc tranh cãi/luận điểm). Chú ý bỏ chữ 'e'." },
+    { id: "q72", text: "Noun form of 'employ' is _______.", options: {"A": "employment", "B": "employation", "C": "employer", "D": "A & C are correct"}, answer: "D", explain: "employ -> employment (sự việc làm) và employer (ông chủ). Cả hai đều là danh từ." },
+    { id: "q73", text: "Noun form of 'prepare' is _______.", options: {"A": "preparation", "B": "preparement", "C": "preparance", "D": "preparity"}, answer: "A", explain: "prepare -> preparation (sự chuẩn bị)." },
+    { id: "q74", text: "Noun form of 'develop' is _______.", options: {"A": "development", "B": "developation", "C": "developness", "D": "develop"}, answer: "A", explain: "develop -> development (sự phát triển)." },
+    { id: "q75", text: "If you do not succeed, you experience _______.", options: {"A": "success", "B": "failure", "C": "argument", "D": "achievement"}, answer: "B", explain: "'Do not succeed' = sự thất bại (failure)." },
+
+    // E. Tổng hợp Từ vựng Unit 5 (Nâng cao & Ngữ cảnh)
+    { id: "q76", text: "An employee who is willing to change their working hours easily is very _______.", options: {"A": "honest", "B": "flexible", "C": "punctual", "D": "ambitious"}, answer: "B", explain: "'Willing to change' (sẵn sàng thay đổi linh hoạt) = flexible." },
+    { id: "q77", text: "If you always tell the truth, you are _______.", options: {"A": "polite", "B": "honest", "C": "confident", "D": "hard-working"}, answer: "B", explain: "'Always tell the truth' = trung thực (honest)." },
+    { id: "q78", text: "A _______ person always arrives on time.", options: {"A": "flexible", "B": "reliable", "C": "punctual", "D": "creative"}, answer: "C", explain: "'Always arrives on time' = đúng giờ (punctual)." },
+    { id: "q79", text: "Employers love _______ workers who put a lot of effort into their job.", options: {"A": "hard-working", "B": "lazy", "C": "tiring", "D": "stressful"}, answer: "A", explain: "'Put a lot of effort into their job' = chăm chỉ (hard-working)." },
+    { id: "q80", text: "Someone who really wants to be successful and rich is _______.", options: {"A": "reliable", "B": "polite", "C": "ambitious", "D": "honest"}, answer: "C", explain: "'Really wants to be successful and rich' = tham vọng (ambitious)." },
+    { id: "q81", text: "Someone who shows a lot of excitement and interest in things is _______.", options: {"A": "enthusiastic", "B": "organised", "C": "confident", "D": "polite"}, answer: "A", explain: "'Excitement and interest' = nhiệt huyết, hăng hái (enthusiastic)." },
+    { id: "q82", text: "If you are sure of your own abilities, you are _______.", options: {"A": "reliable", "B": "polite", "C": "confident", "D": "flexible"}, answer: "C", explain: "'Sure of your own abilities' = tự tin (confident)." },
+    { id: "q83", text: "A(n) _______ person plans their work and time well.", options: {"A": "ambitious", "B": "organised", "C": "flexible", "D": "honest"}, answer: "B", explain: "'Plans their work and time well' = có óc tổ chức (organised)." },
+    { id: "q84", text: "Someone who can be trusted to do what they say they will do is _______.", options: {"A": "reliable", "B": "ambitious", "C": "enthusiastic", "D": "polite"}, answer: "A", explain: "'Trusted to do what they say' = đáng tin cậy (reliable)." },
+    { id: "q85", text: "Saying 'please' and 'thank you' shows that you are _______.", options: {"A": "polite", "B": "honest", "C": "confident", "D": "flexible"}, answer: "A", explain: "Nói 'please/thank you' thể hiện sự lịch sự (polite)." },
+    { id: "q86", text: "A stunt double's job is often physically _______ and dangerous.", options: {"A": "rewarding", "B": "challenging", "C": "boring", "D": "repetitive"}, answer: "B", explain: "'Stunt double' (diễn viên đóng thế) có tính chất nguy hiểm và thử thách (challenging)." },
+    { id: "q87", text: "A video game tester might find their job _______ if they have to play the same level 100 times.", options: {"A": "varied", "B": "repetitive", "C": "rewarding", "D": "creative"}, answer: "B", explain: "'Play the same level 100 times' thể hiện tính lặp lại nhàm chán (repetitive)." },
+    { id: "q88", text: "Many students do a _______ job during the summer holidays to earn some cash.", options: {"A": "full-time", "B": "part-time", "C": "overtime", "D": "long-time"}, answer: "B", explain: "Học sinh làm việc trong kỳ nghỉ hè thường là việc bán thời gian (part-time)." },
+    { id: "q89", text: "He works in the hospital driving the ambulance. He's a(n) _______.", options: {"A": "farm worker", "B": "paramedic", "C": "engineer", "D": "cleaner"}, answer: "B", explain: "'Driving the ambulance' (lái xe cứu thương) thuộc công việc của nhân viên y tế cứu thương (paramedic)." },
+    { id: "q90", text: "If you are good at numbers and logic, you might become a computer _______.", options: {"A": "programmer", "B": "waiter", "C": "hairdresser", "D": "builder"}, answer: "A", explain: "Giỏi số học/logic là phẩm chất của lập trình viên (programmer)." },
+    { id: "q91", text: "She deals with legal documents and contracts. She is a _______.", options: {"A": "solicitor", "B": "travel agent", "C": "receptionist", "D": "journalist"}, answer: "A", explain: "Xử lý tài liệu/hợp đồng pháp lý là công việc của luật sư (solicitor)." },
+    { id: "q92", text: "He writes articles for the daily newspaper. He is a _______.", options: {"A": "journalist", "B": "programmer", "C": "estate agent", "D": "architect"}, answer: "A", explain: "Viết bài cho báo ngày là công việc của nhà báo (journalist)." },
+    { id: "q93", text: "A surfing instructor usually works _______.", options: {"A": "indoors", "B": "outdoors", "C": "in an office", "D": "nine-to-five"}, answer: "B", explain: "Người dạy lướt sóng (surfing) phải làm việc ngoài trời (outdoors)." },
+    { id: "q94", text: "When you work _______, you don't have colleagues around you.", options: {"A": "as a team", "B": "alone", "C": "with children", "D": "with the public"}, answer: "B", explain: "Không có đồng nghiệp xung quanh tức là làm việc một mình (alone)." },
+    { id: "q95", text: "I don't want a boss. I want to _______ my own business.", options: {"A": "do", "B": "make", "C": "start", "D": "work"}, answer: "C", explain: "Cụm 'start a business' (khởi nghiệp). Không dùng do/make/work." },
+    { id: "q96", text: "The prefix 'semi-' in 'semi-professional' means _______.", options: {"A": "fully", "B": "partly/half", "C": "not", "D": "extremely"}, answer: "B", explain: "Tiền tố 'semi-' nghĩa là một phần/một nửa." },
+    { id: "q97", text: "Sean Aiken took on 52 jobs in 52 weeks to find his _______ job.", options: {"A": "nightmare", "B": "dream", "C": "bad", "D": "boring"}, answer: "B", explain: "Trải nghiệm 52 công việc để tìm 'dream job' (công việc mơ ước)." },
+    { id: "q98", text: "You should always check your spelling before you send in your _______ letter.", options: {"A": "request", "B": "application", "C": "contract", "D": "notice"}, answer: "B", explain: "'Application letter' (đơn xin việc)." },
+    { id: "q99", text: "A _______ delivers food to your house.", options: {"A": "pizza delivery boy", "B": "paramedic", "C": "groundskeeper", "D": "solicitor"}, answer: "A", explain: "'Delivers food to your house' là người giao pizza." },
+    { id: "q100", text: "During the interview, you should show that you are _______ to learn new things.", options: {"A": "lazy", "B": "enthusiastic", "C": "tiring", "D": "stressful"}, answer: "B", explain: "Trong phỏng vấn cần tỏ ra hào hứng (enthusiastic) học hỏi điều mới." },
+    
+    // ================= PHẦN 2: UNIT 6 - MONEY (CÂU 101 - 200) =================
+    { type: "title", unit: "PHẦN 2: UNIT 6 - MONEY" },
+    { type: "title", unit: "A. Cửa hàng và Dịch vụ (Shops & Services)" },
+    { id: "q101", text: "You can buy bread and cakes at the _______.", options: {"A": "butcher's", "B": "baker's", "C": "greengrocer's", "D": "stationer's"}, answer: "B", explain: "Bán 'bread and cakes' (bánh mì và bánh ngọt). Các cửa hàng khác sai mặt hàng (butcher's = thịt, greengrocer's = rau củ, stationer's = văn phòng phẩm)." },
+    { id: "q102", text: "If you need to buy meat, you should go to the _______.", options: {"A": "butcher's", "B": "deli", "C": "florist's", "D": "charity shop"}, answer: "A", explain: "Bán thịt ('meat')." },
+    { id: "q103", text: "A _______ sells fruit and vegetables.", options: {"A": "greengrocer's", "B": "stationer's", "C": "chemist's", "D": "jeweller's"}, answer: "A", explain: "Bán 'fruit and vegetables' (trái cây và rau củ)." },
+    { id: "q104", text: "You can buy medicines, soap, and shampoo at the _______.", options: {"A": "chemist's", "B": "optician's", "C": "cosmetics store", "D": "A & C are correct"}, answer: "A", explain: "Bán 'medicines' (thuốc) kèm đồ vệ sinh cá nhân như xà phòng/dầu gội. (Ở Anh, chemist's có bán cả hóa mỹ phẩm)." },
+    { id: "q105", text: "A shop that sells flowers and indoor plants is a _______.", options: {"A": "garden centre", "B": "florist's", "C": "deli", "D": "baker's"}, answer: "B", explain: "Bán hoa ('flowers') và cây cảnh trong nhà." },
+    { id: "q106", text: "If you want to buy pens, paper, and notebooks, you go to a _______.", options: {"A": "stationer's", "B": "newsagent's", "C": "DIY store", "D": "estate agent's"}, answer: "A", explain: "Bán 'pens, paper, notebooks'." },
+    { id: "q107", text: "You can buy rings, necklaces, and watches at a _______.", options: {"A": "clothes shop", "B": "jeweller's", "C": "charity shop", "D": "cosmetics store"}, answer: "B", explain: "Bán nhẫn, dây chuyền, đồng hồ." },
+    { id: "q108", text: "A _______ sells newspapers, magazines, and sweets.", options: {"A": "newsagent's", "B": "stationer's", "C": "post office", "D": "bank"}, answer: "A", explain: "Bán báo, tạp chí, kẹo." },
+    { id: "q109", text: "You go to an _______ to get your eyes tested and buy glasses.", options: {"A": "optician's", "B": "chemist's", "C": "hospital", "D": "estate agent's"}, answer: "A", explain: "'Eyes tested and buy glasses' (đo mắt và mua kính)." },
+    { id: "q110", text: "A _______ is a shop where the money you pay goes to help people in need.", options: {"A": "bank", "B": "charity shop", "C": "DIY store", "D": "coffee shop"}, answer: "B", explain: "'Money... goes to help people in need' (tiền dùng để giúp người nghèo/tổ chức từ thiện)." },
+    { id: "q111", text: "If you need to send a parcel or buy stamps, you visit the _______.", options: {"A": "bank", "B": "post office", "C": "stationer's", "D": "newsagent's"}, answer: "B", explain: "'Send a parcel or buy stamps' (gửi bưu kiện/mua tem)." },
+    { id: "q112", text: "A shop that sells high-quality foods, such as cheese and cold meats, is a _______.", options: {"A": "deli (delicatessen)", "B": "butcher's", "C": "baker's", "D": "takeaway"}, answer: "A", explain: "Bán thực phẩm cao cấp đã qua chế biến (pho mát, thịt nguội)." },
+    { id: "q113", text: "You can buy tools, paint, and wood to repair your house at a _______.", options: {"A": "DIY store", "B": "garden centre", "C": "stationer's", "D": "launderette"}, answer: "A", explain: "Cửa hàng đồ tự sửa chữa nhà cửa (Do-It-Yourself) bán dụng cụ, sơn, gỗ." },
+    { id: "q114", text: "If you don't have a washing machine at home, you can wash your clothes at a _______.", options: {"A": "charity shop", "B": "launderette", "C": "DIY store", "D": "chemist's"}, answer: "B", explain: "Nơi giặt quần áo khi không có máy giặt ở nhà." },
+    { id: "q115", text: "A _______ sells hot food that you carry out and eat at home.", options: {"A": "takeaway", "B": "coffee shop", "C": "greengrocer's", "D": "deli"}, answer: "A", explain: "'Hot food that you carry out and eat at home'." },
+    { id: "q116", text: "A place where you can keep your money safe or borrow money is a _______.", options: {"A": "bank", "B": "post office", "C": "estate agent's", "D": "charity shop"}, answer: "A", explain: "Nơi giữ tiền an toàn hoặc cho vay (keep money safe or borrow money)." },
+    { id: "q117", text: "If you want to buy a new house or flat, you should contact an _______.", options: {"A": "estate agent's", "B": "architect's", "C": "DIY store", "D": "post office"}, answer: "A", explain: "Đại lý bất động sản để mua nhà/căn hộ." },
+    { id: "q118", text: "A large shop that sells plants, trees, and gardening tools is a _______.", options: {"A": "florist's", "B": "garden centre", "C": "greengrocer's", "D": "DIY store"}, answer: "B", explain: "Cửa hàng lớn bán cây cối, dụng cụ làm vườn." },
+    { id: "q119", text: "A shop specializing in makeup and beauty products is a _______.", options: {"A": "chemist's", "B": "cosmetics store", "C": "jeweller's", "D": "charity shop"}, answer: "B", explain: "Chuyên bán đồ trang điểm và làm đẹp." },
+    { id: "q120", text: "If you need a new pair of sneakers, you go to a _______.", options: {"A": "shoe shop", "B": "clothes shop", "C": "DIY store", "D": "stationer's"}, answer: "A", explain: "Bán 'sneakers' (giày thể thao)." },
+
+    { type: "title", unit: "B. Mua sắm (Shopping: Nouns & Phrases)" },
+    { id: "q121", text: "A small piece of paper that proves you have paid for an item is a _______.", options: {"A": "recipe", "B": "receipt", "C": "coupon", "D": "tag"}, answer: "B", explain: "Giấy chứng minh đã thanh toán. Recipe là công thức nấu ăn." },
+    { id: "q122", text: "The _______ tells you how much something costs in a shop.", options: {"A": "price tag", "B": "receipt", "C": "refund", "D": "bargain"}, answer: "A", explain: "Cho biết giá trị món đồ trong cửa hàng." },
+    { id: "q123", text: "'Buy one, get one free' is a common example of a _______.", options: {"A": "refund", "B": "special offer", "C": "discount", "D": "receipt"}, answer: "B", explain: "Mua 1 tặng 1 là một loại ưu đãi." },
+    { id: "q124", text: "If a shop gives you a _______, you pay less than the usual price.", options: {"A": "discount", "B": "bargain", "C": "refund", "D": "price tag"}, answer: "A", explain: "'Pay less than the usual price' (trả ít hơn giá gốc)." },
+    { id: "q125", text: "Magazines sometimes have _______ that give you money off when you buy a product.", options: {"A": "receipts", "B": "coupons", "C": "tags", "D": "refunds"}, answer: "B", explain: "Cắt từ tạp chí để được trừ tiền khi mua hàng." },
+    { id: "q126", text: "If you think an item is a _______, it means it is a very good price for what you are getting.", options: {"A": "bargain", "B": "sale", "C": "refund", "D": "coupon"}, answer: "A", explain: "'Good price for what you are getting' (giá rất tốt so với giá trị món đồ)." },
+    { id: "q127", text: "When a shop has a _______, it sells some of its items at lower prices for a few days or weeks.", options: {"A": "bargain", "B": "sale", "C": "discount", "D": "special offer"}, answer: "B", explain: "Bán giá thấp trong vài ngày/tuần." },
+    { id: "q128", text: "If you are unhappy with a product, you can ask for your money back, which is called a _______.", options: {"A": "discount", "B": "refund", "C": "receipt", "D": "bargain"}, answer: "B", explain: "Ask for your money back." },
+    { id: "q129", text: "I asked the manager for a _______ because the shirt had a hole in it.", options: {"A": "receipt", "B": "refund", "C": "coupon", "D": "price tag"}, answer: "B", explain: "Đòi hoàn tiền vì áo bị thủng lỗ (hole)." },
+    { id: "q130", text: "You should always keep the _______ in case you need to return the item later.", options: {"A": "receipt", "B": "recipe", "C": "coupon", "D": "tag"}, answer: "A", explain: "Giữ lại biên lai để sau này có thể đổi trả hàng." },
+
+    { type: "title", unit: "C. Động từ về Tiền bạc (Verbs to do with money)" },
+    { id: "q131", text: "If you don't have enough money to buy something, you can't _______ it.", options: {"A": "afford", "B": "spend", "C": "save", "D": "waste"}, answer: "A", explain: "Không đủ tiền thì không thể 'afford' mua." },
+    { id: "q132", text: "Can I _______ 100,000 VND from you? I'll pay you back tomorrow.", options: {"A": "lend", "B": "borrow", "C": "owe", "D": "earn"}, answer: "B", explain: "Chủ thể đi mượn tiền người khác. 'Can I borrow from you?'." },
+    { id: "q133", text: "I will _______ you the money, but you must return it next week.", options: {"A": "borrow", "B": "lend", "C": "afford", "D": "spend"}, answer: "B", explain: "'I will lend you' (tôi sẽ cho bạn mượn). Phân biệt: borrow = mượn vào; lend = cho mượn ra." },
+    { id: "q134", text: "If I borrow money from you, I _______ you money.", options: {"A": "owe", "B": "lend", "C": "pay", "D": "charge"}, answer: "A", explain: "Mượn tiền thì phải nợ ('I owe you')." },
+    { id: "q135", text: "The shop assistant _______ me 50,000 VND for this coffee.", options: {"A": "paid", "B": "cost", "C": "charged", "D": "spent"}, answer: "C", explain: "Cấu trúc 'charge somebody + số tiền' (tính giá ai đó bao nhiêu tiền)." },
+    { id: "q136", text: "How much does this laptop _______?", options: {"A": "pay", "B": "cost", "C": "spend", "D": "charge"}, answer: "B", explain: "Hỏi giá món đồ dùng động từ 'cost'." },
+    { id: "q137", text: "I am trying to _______ up for a new smartphone.", options: {"A": "spend", "B": "waste", "C": "save", "D": "afford"}, answer: "C", explain: "Cụm 'save up for' (tiết kiệm tiền để mua gì đó)." },
+    { id: "q138", text: "Don't _______ your money on things you don't need!", options: {"A": "spend", "B": "waste", "C": "save", "D": "lend"}, answer: "B", explain: "Đừng lãng phí tiền vào những thứ không cần ('things you don't need')." },
+    { id: "q139", text: "I usually _______ about 500,000 VND on clothes every month.", options: {"A": "waste", "B": "spend", "C": "cost", "D": "charge"}, answer: "B", explain: "Cấu trúc 'spend money on something' (tiêu tiền vào việc gì)." },
+    { id: "q140", text: "I need to _______ this shirt because it's the wrong size.", options: {"A": "exchange", "B": "charge", "C": "afford", "D": "save"}, answer: "A", explain: "Đổi áo vì sai kích cỡ ('wrong size')." },
+    { id: "q141", text: "Let me _______ for the meal tonight; it's my treat.", options: {"A": "buy", "B": "pay", "C": "spend", "D": "cost"}, answer: "B", explain: "'Pay for the meal' (trả tiền cho bữa ăn). Cấu trúc 'pay for'." },
+    { id: "q142", text: "When you _______ a product, you give it to someone in exchange for money.", options: {"A": "buy", "B": "sell", "C": "spend", "D": "owe"}, answer: "B", explain: "'Give it to someone in exchange for money' (đưa hàng lấy tiền)." },
+    { id: "q143", text: "When you _______ a product, you give money to get it.", options: {"A": "sell", "B": "buy", "C": "save", "D": "lend"}, answer: "B", explain: "'Give money to get it' (đưa tiền lấy hàng)." },
+    { id: "q144", text: "If a shop gives you your money back, you _______ a refund.", options: {"A": "get", "B": "make", "C": "take", "D": "do"}, answer: "A", explain: "Cụm collocation 'get a refund' (nhận được khoản tiền hoàn)." },
+    { id: "q145", text: "I went to the bank to _______ my pounds into euros.", options: {"A": "exchange", "B": "refund", "C": "borrow", "D": "lend"}, answer: "A", explain: "Đổi ngoại tệ từ Bảng Anh (pounds) sang Euro dùng 'exchange'." },
+    { id: "q146", text: "It is important to _______ money for your future.", options: {"A": "save", "B": "waste", "C": "owe", "D": "cost"}, answer: "A", explain: "Tiết kiệm tiền cho tương lai ('future')." },
+    { id: "q147", text: "He likes to _______ all his pocket money on video games.", options: {"A": "save", "B": "spend", "C": "afford", "D": "charge"}, answer: "B", explain: "Tiêu hết tiền tiêu vặt (pocket money) vào trò chơi. Đi kèm giới từ 'on'." },
+    { id: "q148", text: "I can't _______ to go on holiday this year; I'm broke.", options: {"A": "afford", "B": "spend", "C": "charge", "D": "lend"}, answer: "A", explain: "'Broke' (cháy túi) -> không có khả năng chi trả ('afford') để đi nghỉ mát." },
+    { id: "q149", text: "You shouldn't _______ money from friends because it can ruin relationships.", options: {"A": "lend", "B": "borrow", "C": "cost", "D": "spend"}, answer: "B", explain: "Mượn tiền từ bạn bè ('from friends') làm hỏng mối quan hệ." },
+    { id: "q150", text: "'How much did you pay _______ that jacket?' - 'It was a bargain!'", options: {"A": "to", "B": "for", "C": "on", "D": "at"}, answer: "B", explain: "Cấu trúc 'pay for something' (trả tiền để mua cái gì)." },
+
+    { type: "title", unit: "D. Kinh doanh (Business) & Tiền tệ (Numbers and Currencies)" },
+    { id: "q151", text: "The symbol '€' stands for _______.", options: {"A": "dollar", "B": "yen", "C": "euro", "D": "pound"}, answer: "C", explain: "Biểu tượng của đồng Euro châu Âu." },
+    { id: "q152", text: "The symbol '£' stands for _______.", options: {"A": "pound", "B": "yen", "C": "euro", "D": "dollar"}, answer: "A", explain: "Biểu tượng của đồng Bảng Anh." },
+    { id: "q153", text: "The symbol '¥' stands for _______.", options: {"A": "yen", "B": "dollar", "C": "pound", "D": "euro"}, answer: "A", explain: "Biểu tượng của đồng Yên Nhật (hoặc Nhân dân tệ)." },
+    { id: "q154", text: "A business person who starts a new company and takes risks is an _______.", options: {"A": "investor", "B": "entrepreneur", "C": "employee", "D": "CEO"}, answer: "B", explain: "Người bắt đầu công ty và chấp nhận rủi ro ('starts a new company and takes risks')." },
+    { id: "q155", text: "The money a business makes after paying all its expenses is called _______.", options: {"A": "income", "B": "funding", "C": "profit", "D": "contract"}, answer: "C", explain: "Tiền kiếm được sau khi trừ chi phí ('expenses')." },
+    { id: "q156", text: "The money received by a person or business from work or investments is _______.", options: {"A": "profit", "B": "income", "C": "contract", "D": "funding"}, answer: "B", explain: "Tiền nhận được từ việc làm hoặc đầu tư." },
+    { id: "q157", text: "A formal agreement to do business is a _______.", options: {"A": "contract", "B": "profit", "C": "funding", "D": "receipt"}, answer: "A", explain: "Thỏa thuận kinh doanh chính thức ('formal agreement')." },
+    { id: "q158", text: "People who support a business by giving or lending it money are _______.", options: {"A": "entrepreneurs", "B": "CEOs", "C": "investors", "D": "applicants"}, answer: "C", explain: "Người hỗ trợ công ty bằng cách cấp vốn." },
+    { id: "q159", text: "The person in charge of a large company is the _______.", options: {"A": "CEO", "B": "investor", "C": "contractor", "D": "employee"}, answer: "A", explain: "Giám đốc điều hành (Chief Executive Officer), người đứng đầu công ty lớn." },
+    { id: "q160", text: "Money that a business needs for a particular purpose, often provided by the government or investors, is _______.", options: {"A": "profit", "B": "income", "C": "funding", "D": "contract"}, answer: "C", explain: "Tiền cấp cho mục đích cụ thể từ chính phủ/nhà đầu tư." },
+
+    { type: "title", unit: "E. Trong trường học (In school)" },
+    { id: "q161", text: "Students eat their lunch in the school _______.", options: {"A": "library", "B": "canteen", "C": "staff room", "D": "hall"}, answer: "B", explain: "Canteen là nhà ăn ở trường học." },
+    { id: "q162", text: "You can borrow books to read from the school _______.", options: {"A": "hall", "B": "classroom", "C": "library", "D": "playground"}, answer: "C", explain: "Thư viện là nơi mượn sách." },
+    { id: "q163", text: "Teachers relax and prepare lessons in the _______.", options: {"A": "staff room", "B": "store room", "C": "canteen", "D": "playground"}, answer: "A", explain: "Phòng hội đồng/phòng giáo viên để nghỉ ngơi và chuẩn bị bài." },
+    { id: "q164", text: "Physical education (PE) classes and sports usually take place on the _______.", options: {"A": "classroom", "B": "playing field", "C": "library", "D": "staff room"}, answer: "B", explain: "Sân vận động/sân chơi thể thao cho môn Thể dục (PE)." },
+    { id: "q165", text: "During break time, students usually go out to the _______ to chat and play.", options: {"A": "playground", "B": "store room", "C": "hall", "D": "classroom"}, answer: "A", explain: "Sân chơi, nơi học sinh ra chơi và trò chuyện." },
+    { id: "q166", text: "A large room in a school where all the students and teachers can meet is the _______.", options: {"A": "hall", "B": "canteen", "C": "playing field", "D": "library"}, answer: "A", explain: "Hội trường lớn nơi tập trung toàn trường." },
+    { id: "q167", text: "Extra chairs and desks are kept in the _______.", options: {"A": "store room", "B": "staff room", "C": "classroom", "D": "canteen"}, answer: "A", explain: "Phòng kho để chứa bàn ghế thừa." },
+    { id: "q168", text: "The room where lessons are taught is the _______.", options: {"A": "classroom", "B": "library", "C": "hall", "D": "playground"}, answer: "A", explain: "Phòng học chuyên để giảng dạy." },
+
+    { type: "title", unit: "F. Verb Patterns (Động từ đi kèm To V / V-ing / V nguyên mẫu)" },
+    { id: "q169", text: "You should avoid _______ fatty foods if you want to lose weight.", options: {"A": "eating", "B": "to eat", "C": "eat", "D": "to eating"}, answer: "A", explain: "avoid + V-ing (tránh làm gì)." },
+    { id: "q170", text: "My parents don't let me _______ up late on weekdays.", options: {"A": "staying", "B": "to stay", "C": "stay", "D": "stayed"}, answer: "C", explain: "let somebody + V nguyên mẫu (cho phép ai làm gì)." },
+    { id: "q171", text: "The shop assistant offered _______ me find a larger size.", options: {"A": "helping", "B": "to help", "C": "help", "D": "to helping"}, answer: "B", explain: "offer + to V (đề nghị giúp/làm gì)." },
+    { id: "q172", text: "He pretended _______ sick so he wouldn't have to go to school.", options: {"A": "to be", "B": "being", "C": "be", "D": "been"}, answer: "A", explain: "pretend + to V (giả vờ làm gì)." },
+    { id: "q173", text: "I can't afford _______ a new car right now.", options: {"A": "buying", "B": "to buy", "C": "buy", "D": "to buying"}, answer: "B", explain: "afford + to V (đủ khả năng chi trả việc gì)." },
+    { id: "q174", text: "She refused _______ to what I was saying.", options: {"A": "to listen", "B": "listening", "C": "listen", "D": "to listening"}, answer: "A", explain: "refuse + to V (từ chối làm gì)." },
+    { id: "q175", text: "We expect _______ a lot of money on our trip to London.", options: {"A": "spending", "B": "spend", "C": "to spend", "D": "spent"}, answer: "C", explain: "expect + to V (kỳ vọng làm gì)." },
+    { id: "q176", text: "Do you fancy _______ to the cinema tonight?", options: {"A": "going", "B": "to go", "C": "go", "D": "to going"}, answer: "A", explain: "fancy + V-ing (muốn/thích làm gì)." },
+    { id: "q177", text: "I always enjoy _______ around the shopping mall.", options: {"A": "looking", "B": "to look", "C": "look", "D": "to looking"}, answer: "A", explain: "enjoy + V-ing (thích làm gì)." },
+    { id: "q178", text: "My mother makes me _______ my room every Sunday.", options: {"A": "to tidy", "B": "tidy", "C": "tidying", "D": "tidied"}, answer: "B", explain: "make somebody + V nguyên mẫu (bắt/sai ai làm gì)." },
+    { id: "q179", text: "Jason promised _______ me as soon as he arrived.", options: {"A": "to phone", "B": "phoning", "C": "phone", "D": "to phoning"}, answer: "A", explain: "promise + to V (hứa làm gì)." },
+    { id: "q180", text: "Customers keep _______ into the shop without buying anything.", options: {"A": "come", "B": "to come", "C": "coming", "D": "came"}, answer: "C", explain: "keep + V-ing (tiếp tục/cứ lặp lại hành động gì)." },
+    { id: "q181", text: "They finally agreed _______ the price of the house.", options: {"A": "lower", "B": "lowering", "C": "to lower", "D": "to lowering"}, answer: "C", explain: "agree + to V (đồng ý làm gì)." },
+    { id: "q182", text: "I don't mind _______ you with your homework.", options: {"A": "helping", "B": "to help", "C": "help", "D": "to helping"}, answer: "A", explain: "mind + V-ing (phiền làm gì). 'I don't mind helping' = Tôi không ngại giúp." },
+    { id: "q183", text: "We managed _______ the missing owner of the bag.", options: {"A": "finding", "B": "to find", "C": "find", "D": "found"}, answer: "B", explain: "manage + to V (xoay xở/thành công trong việc làm gì)." },
+    { id: "q184", text: "He ended up _______ all his money on video games.", options: {"A": "wasting", "B": "to waste", "C": "waste", "D": "wasted"}, answer: "A", explain: "end up + V-ing (rốt cuộc lại/cuối cùng lại làm gì)." },
+    { id: "q185", text: "I fail _______ understand why she did that.", options: {"A": "to", "B": "in", "C": "on", "D": "with"}, answer: "A", explain: "fail + to V (thất bại trong việc làm gì/không làm được việc gì)." },
+
+    { type: "title", unit: "G. Tổng hợp Từ vựng Unit 6 (Phrasal verbs, Idioms & Context)" },
+    { id: "q186", text: "To start a new business is to _______ a business.", options: {"A": "set up", "B": "make up", "C": "do up", "D": "get up"}, answer: "A", explain: "Phrasal verb 'set up a business' (thành lập công ty/kinh doanh)." },
+    { id: "q187", text: "I am saving _______ to buy a new laptop.", options: {"A": "up", "B": "on", "C": "in", "D": "out"}, answer: "A", explain: "Phrasal verb 'save up' (tiết kiệm tiền cho mục đích cụ thể)." },
+    { id: "q188", text: "If you don't have enough money, you might ask for a _______ in the price.", options: {"A": "discount", "B": "tag", "C": "coupon", "D": "receipt"}, answer: "A", explain: "Xin 'discount' (giảm giá) khi không đủ tiền." },
+    { id: "q189", text: "I bought this dress on _______. It was 50% off!", options: {"A": "sale", "B": "price", "C": "receipt", "D": "refund"}, answer: "A", explain: "Cụm từ 'on sale' (đang được giảm giá - 50% off)." },
+    { id: "q190", text: "Aaron Levie is the co-founder and _______ of the IT company 'Box'.", options: {"A": "CEO", "B": "employee", "C": "customer", "D": "client"}, answer: "A", explain: "Co-founder (người đồng sáng lập) thường đi kèm chức vụ CEO (Giám đốc điều hành)." },
+    { id: "q191", text: "They were looking for _______ to start their new project.", options: {"A": "funding", "B": "receipts", "C": "sales", "D": "tags"}, answer: "A", explain: "Cần 'funding' (vốn tài trợ) để bắt đầu dự án." },
+    { id: "q192", text: "'Showrooming' is when people look at a product in a shop but _______ it online for a cheaper price.", options: {"A": "buy", "B": "sell", "C": "spend", "D": "cost"}, answer: "A", explain: "Định nghĩa của Showrooming: xem đồ ở cửa hàng thật nhưng lại 'buy' (mua) online cho rẻ." },
+    { id: "q193", text: "The coffee shop in my village had to _______ down because there weren't enough customers.", options: {"A": "close", "B": "open", "C": "set", "D": "go"}, answer: "A", explain: "Phrasal verb 'close down' (phá sản/đóng cửa vĩnh viễn do thiếu khách)." },
+    { id: "q194", text: "If I had my own company, I would _______ a lot of profit.", options: {"A": "make", "B": "do", "C": "set", "D": "pay"}, answer: "A", explain: "Cụm 'make a profit' (tạo ra lợi nhuận)." },
+    { id: "q195", text: "It's a bad idea to _______ money on things you never use.", options: {"A": "waste", "B": "save", "C": "earn", "D": "gain"}, answer: "A", explain: "'Waste money on things you never use' (lãng phí tiền vào đồ không dùng)." },
+    { id: "q196", text: "The billionaire donated most of his _______ to charities.", options: {"A": "income", "B": "receipt", "C": "coupon", "D": "tag"}, answer: "A", explain: "Donate 'income' (quyên góp thu nhập) cho từ thiện. Biên lai (receipt), thẻ (tag) không có ý nghĩa trong câu này." },
+    { id: "q197", text: "Many successful _______ drop out of university to start their businesses early.", options: {"A": "entrepreneurs", "B": "charities", "C": "services", "D": "consumers"}, answer: "A", explain: "Nhiều nhà khởi nghiệp (entrepreneurs) bỏ học đại học để lập công ty sớm." },
+    { id: "q198", text: "I need to go to the _______ to deposit some money.", options: {"A": "bank", "B": "butcher's", "C": "baker's", "D": "optician's"}, answer: "A", explain: "Deposit money (gửi tiền vào tài khoản) thì phải ra ngân hàng (bank)." },
+    { id: "q199", text: "Glen James returned the bag full of money because he was an _______ man.", options: {"A": "honest", "B": "flexible", "C": "ambitious", "D": "confident"}, answer: "A", explain: "Trả lại túi tiền nhặt được là người 'honest' (trung thực)." },
+    { id: "q200", text: "'Honesty _______' means that being truthful brings rewards in the end.", options: {"A": "pays", "B": "costs", "C": "spends", "D": "wastes"}, answer: "A", explain: "Thành ngữ 'Honesty pays' (sự trung thực mang lại quả ngọt/được đền đáp). Không dùng costs, spends, wastes." },
+
+    // ================= PHẦN 3: UNIT 5 - MỨC ĐỘ VẬN DỤNG & NÂNG CAO =================
+    { type: "title", unit: "PHẦN 3: UNIT 5 - AMBITION (MỨC ĐỘ VẬN DỤNG & NÂNG CAO)" },
+    { type: "title", unit: "A. Tiền tố, Hậu tố & Từ loại trong ngữ cảnh phức tạp" },
+    { id: "q201", text: "Because he applied for a simple data entry job with a Master's degree and ten years of management experience, the HR department told him he was _______ for the position.", options: {"A": "underqualified", "B": "overqualified", "C": "semi-skilled", "D": "multi-talented"}, answer: "B", explain: "Đã có bằng Thạc sĩ và 10 năm kinh nghiệm quản lý nhưng ứng tuyển việc nhập liệu đơn giản, công ty sẽ từ chối vì ứng viên quá giỏi so với yêu cầu (overqualified)." },
+    { id: "q202", text: "The company is seeking a _______ individual who can seamlessly transition between designing graphics, writing code, and managing social media accounts.", options: {"A": "multi-tasking", "B": "over-confident", "C": "semi-professional", "D": "post-graduate"}, answer: "A", explain: "Khả năng chuyển đổi mượt mà giữa thiết kế, viết code, quản lý MXH là kỹ năng làm nhiều việc cùng lúc (multi-tasking)." },
+    { id: "q203", text: "After the merger, many employees felt _______ and unappreciated, as they had to work 12 hours a day without any overtime pay.", options: {"A": "overpaid", "B": "underpaid", "C": "underworked", "D": "co-funded"}, answer: "B", explain: "Làm 12 tiếng/ngày không có tiền tăng ca (overtime) dẫn đến cảm giác bị trả lương quá bèo bọt (underpaid)." },
+    { id: "q204", text: "She has a very _______ schedule, so she can easily swap her morning shifts for evening ones if the team needs her to.", options: {"A": "repetitive", "B": "stressful", "C": "flexible", "D": "punctual"}, answer: "C", explain: "Khóa ngữ cảnh: 'easily swap morning shifts for evening ones' (dễ dàng đổi ca làm việc) chứng tỏ lịch trình linh hoạt (flexible)." },
+    { id: "q205", text: "Despite his lack of formal education, his remarkable _______ in the real estate market made him a billionaire by the age of thirty.", options: {"A": "achieve", "B": "achiever", "C": "achievements", "D": "unachievement"}, answer: "C", explain: "Sau tính từ 'remarkable' cần danh từ. Ngữ cảnh tích cực (trở thành tỷ phú) nên chọn danh từ số nhiều 'achievements'." },
+    { id: "q206", text: "It is a common _______ that you need a university degree to become a successful software programmer; many are self-taught.", options: {"A": "argue", "B": "argument", "C": "translation", "D": "preparation"}, answer: "B", explain: "Từ vựng 'common argument' (lập luận phổ biến). (Ghi chú: câu hỏi có sự xuất hiện của từ gia đình Unit 5, B là danh từ đúng ngữ pháp)." },
+    { id: "q207", text: "The _______ of the new marketing strategy requires a team of highly creative and dedicated individuals.", options: {"A": "develop", "B": "developing", "C": "development", "D": "developer"}, answer: "C", explain: "'The + Noun + of' -> cần danh từ trừu tượng chỉ quá trình phát triển chiến lược (development)." },
+    { id: "q208", text: "When you work as a freelance journalist, the income can be unpredictable, making it a highly _______ career choice compared to a stable nine-to-five job.", options: {"A": "rewarding", "B": "reliable", "C": "stressful", "D": "punctual"}, answer: "C", explain: "Thu nhập không thể dự đoán (unpredictable) làm cho nghề nhà báo tự do trở nên căng thẳng (stressful) so với công việc ổn định." },
+    { id: "q209", text: "The documentary explores the life of a _______ athlete who still has to work a part-time job to fund his training for the Olympics.", options: {"A": "post-professional", "B": "semi-professional", "C": "over-professional", "D": "multi-professional"}, answer: "B", explain: "Vận động viên vẫn phải làm thêm việc bán thời gian để nuôi đam mê, chứng tỏ họ chỉ thi đấu ở mức bán chuyên (semi-professional)." },
+    { id: "q210", text: "Before submitting your final essay, make sure you _______ it carefully to eliminate any grammatical errors.", options: {"A": "rewrite", "B": "underwrite", "C": "overwrite", "D": "co-write"}, answer: "A", explain: "Để loại bỏ lỗi ngữ pháp (eliminate grammatical errors) thì phải viết/sửa lại bài (rewrite)." },
+
+    { type: "title", unit: "B. Cụm từ cố định & Giới từ (Collocations & Prepositions)" },
+    { id: "q211", text: "As the head of the department, she is _______ charge of overseeing the entire production process and managing over fifty staff members.", options: {"A": "on", "B": "in", "C": "at", "D": "with"}, answer: "B", explain: "Cụm 'in charge of' (chịu trách nhiệm về việc gì)." },
+    { id: "q212", text: "If you want your CV to stand _______ from the crowd, you should highlight your unique voluntary experiences.", options: {"A": "out", "B": "up", "C": "in", "D": "off"}, answer: "A", explain: "Phrasal verb 'stand out from the crowd' (trở nên nổi bật giữa đám đông)." },
+    { id: "q213", text: "The manager praised the team for working effectively _______ pressure to meet the strict deadline.", options: {"A": "over", "B": "under", "C": "in", "D": "on"}, answer: "B", explain: "Cụm 'work under pressure' (làm việc dưới áp lực)." },
+    { id: "q214", text: "After graduating from university, he decided to apply _______ a position as a financial analyst at a multinational bank.", options: {"A": "to", "B": "for", "C": "with", "D": "in"}, answer: "B", explain: "'Apply for a position' (nộp đơn xin vào vị trí). Apply TO a company/person." },
+    { id: "q215", text: "She is entirely responsible _______ training the new recruits and ensuring they understand the safety regulations.", options: {"A": "for", "B": "of", "C": "about", "D": "with"}, answer: "A", explain: "Tính từ 'responsible for' (chịu trách nhiệm cho việc gì)." },
+    { id: "q216", text: "Instead of sending an email, you must fill _______ this application form in black ink and submit it in person.", options: {"A": "on", "B": "out", "C": "at", "D": "up"}, answer: "B", explain: "Phrasal verb 'fill out a form' (hoặc fill in) = điền vào mẫu đơn. (Fill up là đổ đầy bình)." },
+    { id: "q217", text: "My sister has always had a passion for healthcare, so it's no surprise she chose to work _______ a paramedic.", options: {"A": "like", "B": "as", "C": "for", "D": "with"}, answer: "B", explain: "Cụm 'work as a + nghề nghiệp' (làm việc với tư cách là/như là). Không dùng 'like'." },
+    { id: "q218", text: "It takes a lot of patience to deal _______ difficult customers on a daily basis without losing your temper.", options: {"A": "with", "B": "for", "C": "to", "D": "about"}, answer: "A", explain: "'Deal with' (giải quyết/đối phó với ai/cái gì)." },
+    { id: "q219", text: "We are looking for candidates who are willing to take _______ extra responsibilities during the busy holiday season.", options: {"A": "off", "B": "up", "C": "on", "D": "over"}, answer: "C", explain: "Phrasal verb 'take on extra responsibilities' (đảm nhận thêm trách nhiệm). Take off là cất cánh/cởi ra, take over là tiếp quản." },
+    { id: "q220", text: "Despite facing numerous rejections, he refused to give _______ on his dream of becoming a professional actor.", options: {"A": "out", "B": "off", "C": "up", "D": "away"}, answer: "C", explain: "Phrasal verb 'give up on something' (từ bỏ điều gì/ước mơ gì)." },
+
+    { type: "title", unit: "C. Phrasal Verbs & Cụm từ diễn đạt sự nghiệp" },
+    { id: "q221", text: "The CEO decided to _______ down after 20 years of leading the company to unprecedented success.", options: {"A": "step", "B": "look", "C": "turn", "D": "set"}, answer: "A", explain: "'Step down' (từ chức/nhường lại vị trí)." },
+    { id: "q222", text: "Unfortunately, due to the economic crisis, the factory had to _______ off hundreds of workers.", options: {"A": "put", "B": "lay", "C": "take", "D": "call"}, answer: "B", explain: "'Lay off workers' (sa thải công nhân hàng loạt do kinh tế khó khăn)." },
+    { id: "q223", text: "I can't talk right now; I'm completely _______ under with paperwork and need to finish this report by 5 PM.", options: {"A": "snowed", "B": "rained", "C": "stormed", "D": "flooded"}, answer: "A", explain: "Thành ngữ 'be snowed under with something' (bị ngập đầu trong công việc)." },
+    { id: "q224", text: "If you don't take regular breaks and continue working 80 hours a week, you will inevitably _______ out.", options: {"A": "burn", "B": "break", "C": "pass", "D": "drop"}, answer: "A", explain: "'Burn out' (kiệt sức hoàn toàn do làm việc quá độ)." },
+    { id: "q225", text: "It's hard to _______ a living as an artist unless you have a steady stream of commissions.", options: {"A": "do", "B": "make", "C": "earn", "D": "take"}, answer: "B", explain: "Cụm collocation 'make a living' (kiếm sống). Không dùng do/earn a living (phải là earn money)." },
+    { id: "q226", text: "The interview was going well until my phone suddenly _______ off in the middle of my sentence.", options: {"A": "went", "B": "took", "C": "turned", "D": "set"}, answer: "A", explain: "'Phone went off' (điện thoại đổ chuông ầm ĩ giữa chừng). 'Go off' có nghĩa là reo lên." },
+    { id: "q227", text: "He managed to _______ up with a brilliant idea for the new advertising campaign during the brainstorming session.", options: {"A": "make", "B": "come", "C": "catch", "D": "keep"}, answer: "B", explain: "'Come up with an idea' (nghĩ ra/nảy ra một ý tưởng)." },
+    { id: "q228", text: "Before accepting the job offer, you should _______ it over carefully and consider the commute time.", options: {"A": "think", "B": "look", "C": "talk", "D": "pass"}, answer: "A", explain: "'Think it over' (suy nghĩ kỹ càng trước khi quyết định)." },
+    { id: "q229", text: "She was offered a promotion, but she _______ it down because it required relocating to another country.", options: {"A": "put", "B": "turned", "C": "broke", "D": "stepped"}, answer: "B", explain: "'Turn down an offer' (từ chối một lời đề nghị)." },
+    { id: "q230", text: "A good manager knows how to _______ out the best in their employees by providing constructive feedback.", options: {"A": "bring", "B": "take", "C": "make", "D": "find"}, answer: "A", explain: "'Bring out the best in someone' (phát huy được những phẩm chất/năng lực tốt nhất của ai đó)." },
+
+    { type: "title", unit: "D. Phân biệt sắc thái nghĩa & Đọc hiểu ngữ cảnh" },
+    { id: "q231", text: "While a _______ simply performs their duties for a paycheck, a truly _______ employee constantly seeks ways to improve the company.", options: {"A": "lazy / punctual", "B": "reliable / ambitious", "C": "hard-working / polite", "D": "confident / repetitive"}, answer: "B", explain: "Một người 'reliable' (đáng tin, hoàn thành nhiệm vụ cơ bản) so với người 'ambitious' (tham vọng, luôn tìm cách cải thiện và tiến lên)." },
+    { id: "q232", text: "Being _______ means more than just arriving on time; it shows respect for other people's schedules.", options: {"A": "flexible", "B": "reliable", "C": "punctual", "D": "honest"}, answer: "C", explain: "'Arriving on time' là định nghĩa cốt lõi của 'punctual' (sự đúng giờ, tôn trọng thời gian người khác)." },
+    { id: "q233", text: "The job of a groundskeeper is physically demanding and mostly _______, which means it might not suit someone who prefers an air-conditioned office.", options: {"A": "indoors", "B": "outdoors", "C": "sedentary", "D": "creative"}, answer: "B", explain: "Người quản lý sân bãi phải làm ngoài trời, đối lập với phòng điều hòa ('air-conditioned office'). 'Sedentary' là ngồi nhiều." },
+    { id: "q234", text: "In a job interview, it is crucial to appear _______ without coming across as arrogant or boastful.", options: {"A": "enthusiastic", "B": "polite", "C": "confident", "D": "organised"}, answer: "C", explain: "Phân biệt ranh giới mỏng manh: cần tỏ ra 'tự tin' (confident) nhưng không được kiêu ngạo (arrogant)." },
+    { id: "q235", text: "Choose the closest synonym for 'rewarding' in the context of a career:", options: {"A": "lucrative (profitable)", "B": "fulfilling", "C": "demanding", "D": "exhausting"}, answer: "B", explain: "'Rewarding' (đem lại cảm giác thỏa mãn, có ý nghĩa) đồng nghĩa nhất với 'fulfilling'. Lucrative chỉ nghiêng về tiền bạc." },
+    { id: "q236", text: "Choose the antonym for 'repetitive':", options: {"A": "monotonous", "B": "varied", "C": "tedious", "D": "reliable"}, answer: "B", explain: "Từ trái nghĩa (antonym) của 'repetitive' (lặp lại nhàm chán) là 'varied' (đa dạng, nhiều thay đổi)." },
+    { id: "q237", text: "As an estate agent, your primary goal is to facilitate the buying and selling of _______ on behalf of your clients.", options: {"A": "stocks", "B": "groceries", "C": "properties", "D": "software"}, answer: "C", explain: "Đặc thù của nhân viên bất động sản (estate agent) là buôn bán 'properties' (tài sản/nhà đất)." },
+    { id: "q238", text: "A solicitor spends a significant amount of time drafting _______ and providing legal counsel to their clients.", options: {"A": "prescriptions", "B": "recipes", "C": "contracts", "D": "articles"}, answer: "C", explain: "Solicitor (luật sư) là người soạn thảo 'contracts' (hợp đồng/văn bản pháp lý)." },
+    { id: "q239", text: "The transition from a _______ job to a freelance career requires a high level of self-discipline because you no longer have a boss telling you what to do.", options: {"A": "part-time", "B": "nine-to-five", "C": "temporary", "D": "seasonal"}, answer: "B", explain: "Chuyển từ công việc hành chính ổn định ('nine-to-five') sang tự do (freelance) cần kỷ luật tự giác cao." },
+    { id: "q240", text: "The position requires a candidate with strong _______ skills, capable of leading a team of ten developers and resolving internal conflicts.", options: {"A": "interpersonal", "B": "technical", "C": "repetitive", "D": "manual"}, answer: "A", explain: "Kỹ năng dẫn dắt nhóm và giải quyết xung đột (internal conflicts) thuộc về 'interpersonal skills' (kỹ năng giao tiếp/đối nhân xử thế)." },
+
+    { type: "title", unit: "E. Dạng bài tìm lỗi sai (Error Identification)" },
+    { id: "q241", text: "TÌM LỖI SAI: (A) Despite she had a very (B) impressive CV, she (C) was not offered the job because of her lack (D) of confidence during the interview.", options: {"A": "Despite", "B": "impressive", "C": "was not", "D": "of"}, answer: "A", explain: "Despite -> Although/Even though. (Vì sau đó là mệnh đề 'she had...')." },
+    { id: "q242", text: "TÌM LỖI SAI: My (A) co-worker is extremely (B) reliable; you can always (C) count on him to (D) missing the deadlines.", options: {"A": "co-worker", "B": "reliable", "C": "count on", "D": "missing"}, answer: "D", explain: "missing -> not missing / meeting. (Hoặc 'count on him to meet' thay vì missing làm sai nghĩa hoàn toàn của reliable)." },
+    { id: "q243", text: "TÌM LỖI SAI: The (A) development of (B) microchips has revolutionized the technology industry, (C) making computers smaller and more (D) efficiency.", options: {"A": "development", "B": "microchips", "C": "making", "D": "efficiency"}, answer: "D", explain: "efficiency -> efficient. (Sau 'make + O + adj', ta cần tính từ ghép song song với smaller)." },
+    { id: "q244", text: "TÌM LỖI SAI: Working as a (A) paramedic can be incredibly (B) stressful, but saving lives makes it a deeply (C) reward (D) profession.", options: {"A": "paramedic", "B": "stressful", "C": "reward", "D": "profession"}, answer: "C", explain: "reward -> rewarding. (Cần tính từ bổ nghĩa cho danh từ profession)." },
+    { id: "q245", text: "TÌM LỖI SAI: (A) Instead of working (B) as a team, he always prefers to work (C) lonely, which often causes (D) communication problems.", options: {"A": "Instead of", "B": "as a", "C": "lonely", "D": "communication"}, answer: "C", explain: "lonely -> alone. (Work alone = làm việc một mình. Lonely là cảm xúc cô đơn)." },
+    { id: "q246", text: "TÌM LỖI SAI: She has (A) been working (B) overtimes every day this week, so she is feeling completely (C) exhausted and (D) burnt out.", options: {"A": "been working", "B": "overtimes", "C": "exhausted", "D": "burnt out"}, answer: "B", explain: "overtimes -> overtime. (Overtime là danh từ không đếm được trong ngữ cảnh làm thêm giờ)." },
+    { id: "q247", text: "TÌM LỖI SAI: The manager (A) asked the sales assistant (B) to deal to the angry customer (C) while he was (D) on the phone.", options: {"A": "asked", "B": "to deal to", "C": "while", "D": "on the phone"}, answer: "B", explain: "deal to -> deal with. (Cấu trúc đối phó/giải quyết là deal with)." },
+    { id: "q248", text: "TÌM LỖI SAI: It is highly (A) recommending that you (B) send in your application letter (C) at least a week before the (D) deadline.", options: {"A": "recommending", "B": "send in", "C": "at least", "D": "deadline"}, answer: "A", explain: "recommending -> recommended. (Cấu trúc bị động: It is highly recommended that...)." },
+    { id: "q249", text: "TÌM LỖI SAI: If you want (A) to succeed in a (B) multicultural environment, you need to be (C) flexibly and open-minded (D) to new ideas.", options: {"A": "to succeed", "B": "multicultural", "C": "flexibly", "D": "to"}, answer: "C", explain: "flexibly -> flexible. (Sau động từ to be cần tính từ song song với open-minded)." },
+    { id: "q250", text: "TÌM LỖI SAI: His (A) ambitious to become the CEO (B) of the company (C) drove him to work (D) harder than anyone else.", options: {"A": "ambitious", "B": "of the company", "C": "drove", "D": "harder"}, answer: "A", explain: "ambitious -> ambition. (Sau tính từ sở hữu 'His' cần danh từ sự tham vọng)." },
+
+    // ================= PHẦN 4: UNIT 6 - MONEY (MỨC ĐỘ VẬN DỤNG & NÂNG CAO) =================
+    { type: "title", unit: "PHẦN 4: UNIT 6 - MONEY (MỨC ĐỘ VẬN DỤNG & NÂNG CAO)" },
+    { type: "title", unit: "A. Động từ về tiền bạc & Giới từ dễ gây nhầm lẫn" },
+    { id: "q251", text: "I didn't have enough cash on me, so I had to ask my friend to _______ me 200,000 VND for the taxi fare.", options: {"A": "borrow", "B": "lend", "C": "owe", "D": "rent"}, answer: "B", explain: "Yêu cầu bạn 'cho tôi mượn' (ask my friend to lend me). Cấu trúc: lend somebody something." },
+    { id: "q252", text: "By the end of the month, after paying rent and bills, I usually have no money left and end up _______ my parents a small fortune.", options: {"A": "borrowing", "B": "lending", "C": "owing", "D": "affording"}, answer: "C", explain: "Cuối tháng hết tiền và kết cục là 'nợ' (owing) bố mẹ. End up + V-ing." },
+    { id: "q253", text: "The plumber _______ us an exorbitant fee for simply fixing a leaking pipe that took him ten minutes.", options: {"A": "cost", "B": "spent", "C": "charged", "D": "paid"}, answer: "C", explain: "Thợ sửa ống nước 'tính giá' (charged us) cắt cổ cho 10 phút làm việc." },
+    { id: "q254", text: "I can't believe how much they are charging _______ a single cup of coffee at this new artisan café!", options: {"A": "for", "B": "with", "C": "on", "D": "at"}, answer: "A", explain: "Cấu trúc 'charge somebody FOR something' (tính tiền ai đó cho món hàng/dịch vụ gì)." },
+    { id: "q255", text: "It's a beautifully designed smartphone, but at $1,500, I simply cannot _______ to upgrade my old one right now.", options: {"A": "spend", "B": "pay", "C": "afford", "D": "save"}, answer: "C", explain: "Điện thoại $1,500 là quá đắt nên không đủ khả năng tài chính ('cannot afford') để lên đời máy." },
+    { id: "q256", text: "Instead of _______ all your allowance on trivial things, you should start putting some away in a savings account.", options: {"A": "wasting", "B": "investing", "C": "owing", "D": "costing"}, answer: "A", explain: "Trái ngược với việc tiết kiệm (putting away) là 'lãng phí' (wasting) tiền vào những thứ vô bổ." },
+    { id: "q257", text: "She decided to invest a significant portion of her income _______ the stock market, hoping for long-term gains.", options: {"A": "on", "B": "to", "C": "in", "D": "for"}, answer: "C", explain: "Giới từ cố định 'invest IN something' (đầu tư vào cái gì)." },
+    { id: "q258", text: "'Can I _______ your textbook? I left mine at home.' - 'Sure, but make sure you return it tomorrow.'", options: {"A": "lend", "B": "borrow", "C": "rent", "D": "owe"}, answer: "B", explain: "Câu hỏi xin phép đi mượn đồ của người khác: 'Can I borrow?'." },
+    { id: "q259", text: "The total _______ of the renovation project exceeded our initial budget by almost 30%.", options: {"A": "charge", "B": "price", "C": "cost", "D": "bill"}, answer: "C", explain: "'Total cost' (tổng chi phí) của dự án vượt quá ngân sách. 'Price' dùng cho món hàng bán lẻ; 'bill' là hóa đơn." },
+    { id: "q260", text: "If you buy the laptop online rather than in the physical store, you won't have to pay _______ delivery.", options: {"A": "for", "B": "on", "C": "with", "D": "to"}, answer: "A", explain: "Cụm 'pay for delivery' (trả phí giao hàng)." },
+
+    { type: "title", unit: "B. Mua sắm, Cửa hàng & Quyền lợi người tiêu dùng" },
+    { id: "q261", text: "When purchasing electronic goods, always retain your _______; otherwise, the store will not process a return if the item is faulty.", options: {"A": "price tag", "B": "barcode", "C": "receipt", "D": "recipe"}, answer: "C", explain: "Phải giữ lại 'biên lai thanh toán' (receipt) để chứng minh giao dịch thì mới được đổi trả hàng lỗi (faulty)." },
+    { id: "q262", text: "The local _______ has announced a closing-down sale, offering up to 70% off on all hardware, paint, and gardening tools.", options: {"A": "deli", "B": "DIY store", "C": "stationer's", "D": "charity shop"}, answer: "B", explain: "Cửa hàng bán phần cứng (hardware), sơn, dụng cụ làm vườn thì chắc chắn là cửa hàng vật dụng tự sửa nhà DIY store." },
+    { id: "q263", text: "Because the zipper on the jacket was broken when I took it out of the packaging, I marched back to the store and demanded a full _______.", options: {"A": "discount", "B": "refund", "C": "bargain", "D": "coupon"}, answer: "B", explain: "Khóa hỏng ngay từ trong hộp, tức là hàng lỗi -> có quyền yêu cầu hoàn tiền 100% (full refund)." },
+    { id: "q264", text: "I managed to negotiate a 15% _______ on the car simply by pointing out a few minor scratches on the bumper.", options: {"A": "discount", "B": "offer", "C": "refund", "D": "fund"}, answer: "A", explain: "Đàm phán giảm giá (negotiate a 15% discount) do xe có vết xước (scratches)." },
+    { id: "q265", text: "Buying second-hand clothes at a _______ is not only a great way to find unique vintage pieces but also supports good causes.", options: {"A": "boutique", "B": "charity shop", "C": "cosmetics store", "D": "jeweller's"}, answer: "B", explain: "Cửa hàng bán đồ cũ quyên góp ủng hộ mục đích tốt đẹp (good causes) là cửa hàng từ thiện (charity shop)." },
+    { id: "q266", text: "You can often find fantastic _______ during the Black Friday sales, but you have to act fast before everything sells out.", options: {"A": "receipts", "B": "refunds", "C": "bargains", "D": "price tags"}, answer: "C", explain: "Săn lùng 'món hời' (bargains) trong dịp Black Friday vì giá siêu rẻ so với giá trị thật." },
+    { id: "q267", text: "As a loyal customer, she regularly receives promotional _______ via email that give her money off her next grocery shop.", options: {"A": "tickets", "B": "receipts", "C": "coupons", "D": "notes"}, answer: "C", explain: "Khách hàng thân thiết nhận mã 'phiếu giảm giá' (coupons) qua email để được trừ tiền." },
+    { id: "q268", text: "The new zoning laws prevent any more fast-food _______ from opening within a one-mile radius of the local high school.", options: {"A": "takeaways", "B": "bakeries", "C": "greengrocers", "D": "launderettes"}, answer: "A", explain: "Luật cấm các cửa hàng 'đồ ăn nhanh mang đi' (fast-food takeaways) mở gần trường cấp 3 để bảo vệ sức khỏe học sinh." },
+    { id: "q269", text: "After her eye test revealed a slight astigmatism, she spent an hour at the _______ choosing a new frame for her glasses.", options: {"A": "chemist's", "B": "optician's", "C": "stationer's", "D": "florist's"}, answer: "B", explain: "Sau khi đo mắt phát hiện loạn thị (astigmatism), cô ấy phải đến cửa hàng kính mắt (optician's) để chọn gọng." },
+    { id: "q270", text: "In many modern supermarkets, the fresh produce section (like the _______) is placed near the entrance to give shoppers a feeling of freshness.", options: {"A": "butcher's", "B": "baker's", "C": "greengrocer's", "D": "deli"}, answer: "C", explain: "Khu vực nông sản tươi (fresh produce section) trong siêu thị tương đương với quầy rau củ quả (greengrocer's)." },
+
+    { type: "title", unit: "C. Cấu trúc Động từ nâng cao (Advanced Verb Patterns)" },
+    { id: "q271", text: "Despite the heavy rain and traffic congestion, we managed _______ at the airport just in time for our flight.", options: {"A": "arriving", "B": "to arrive", "C": "arrive", "D": "to arriving"}, answer: "B", explain: "manage + to V (xoay xở đến nơi kịp lúc dù kẹt xe)." },
+    { id: "q272", text: "I strongly advise you to avoid _______ any personal financial information on unsecured public Wi-Fi networks.", options: {"A": "entering", "B": "to enter", "C": "enter", "D": "entered"}, answer: "A", explain: "avoid + V-ing (tránh nhập thông tin tài chính cá nhân ở mạng Wifi công cộng)." },
+    { id: "q273", text: "He initially refused _______ responsibility for the mistake, but eventually admitted that it was his fault.", options: {"A": "accepting", "B": "accept", "C": "to accept", "D": "to accepting"}, answer: "C", explain: "refuse + to V (từ chối nhận trách nhiệm)." },
+    { id: "q274", text: "If you don't mind _______ a few extra minutes, I can wrap this gift beautifully for you.", options: {"A": "to wait", "B": "wait", "C": "waiting", "D": "waited"}, answer: "C", explain: "don't mind + V-ing (không phiền việc chờ đợi thêm vài phút)." },
+    { id: "q275", text: "After wandering around the massive shopping mall for hours, they ended up _______ nothing at all.", options: {"A": "to buy", "B": "buying", "C": "buy", "D": "bought"}, answer: "B", explain: "end up + V-ing (cuối cùng lại chẳng mua gì cả sau nhiều giờ lượn lờ)." },
+    { id: "q276", text: "The entrepreneur expects _______ a massive return on his investment within the first two years of operation.", options: {"A": "to see", "B": "seeing", "C": "see", "D": "saw"}, answer: "A", explain: "expect + to V (kỳ vọng nhìn thấy lợi nhuận lớn)." },
+    { id: "q277", text: "The shop assistant offered _______ the heavy bags to my car, which was incredibly helpful.", options: {"A": "carrying", "B": "carry", "C": "to carry", "D": "to carrying"}, answer: "C", explain: "offer + to V (đề nghị xách túi nặng giúp)." },
+    { id: "q278", text: "Many teenagers fail _______ realize the true value of money until they have to start earning it themselves.", options: {"A": "in", "B": "to", "C": "at", "D": "with"}, answer: "B", explain: "fail + to V (thất bại/không thể nhận ra giá trị đồng tiền)." },
+    { id: "q279", text: "My parents always make me _______ a portion of my part-time salary into a savings account.", options: {"A": "to put", "B": "putting", "C": "put", "D": "putted"}, answer: "C", explain: "make somebody + V nguyên mẫu (bố mẹ bắt phải trích lương vào tài khoản tiết kiệm)." },
+    { id: "q280", text: "Do you fancy _______ out for dinner tonight, or would you rather order a takeaway?", options: {"A": "to go", "B": "going", "C": "go", "D": "gone"}, answer: "B", explain: "fancy + V-ing (bạn có muốn đi ăn tiệm tối nay không?)." },
+
+    { type: "title", unit: "D. Phrasal Verbs, Idioms & Từ vựng Kinh doanh" },
+    { id: "q281", text: "It took her three years of strict budgeting to save _______ enough money for a down payment on a house.", options: {"A": "up", "B": "off", "C": "in", "D": "out"}, answer: "A", explain: "'Save up' (tiết kiệm/tích góp dần dần cho đủ khoản tiền lớn)." },
+    { id: "q282", text: "The young millionaire decided to give _______ a large portion of his wealth to fund educational programs in developing countries.", options: {"A": "away", "B": "back", "C": "up", "D": "off"}, answer: "A", explain: "'Give away' (quyên góp, cho đi tài sản miễn phí)." },
+    { id: "q283", text: "If you borrow money from the bank to start a business, you have to pay it _______ with interest over a set period.", options: {"A": "out", "B": "down", "C": "off", "D": "back"}, answer: "D", explain: "'Pay it back' (trả lại/hoàn lại khoản tiền đã vay của ngân hàng)." },
+    { id: "q284", text: "The tickets for the concert were highly anticipated and sold _______ within ten minutes of being released online.", options: {"A": "out", "B": "off", "C": "up", "D": "away"}, answer: "A", explain: "'Sell out' (bán sạch, cháy vé)." },
+    { id: "q285", text: "After analyzing the market trends, she realized it was the perfect time to set _______ her own digital marketing agency.", options: {"A": "down", "B": "up", "C": "off", "D": "in"}, answer: "B", explain: "'Set up an agency' (thành lập một công ty/đại lý)." },
+    { id: "q286", text: "Unfortunately, the startup ran _______ funding after just six months and had to shut down its operations.", options: {"A": "out of", "B": "away with", "C": "down to", "D": "up against"}, answer: "A", explain: "'Run out of funding' (cạn kiệt nguồn vốn)." },
+    { id: "q287", text: "Buying that designer handbag cost her an arm and a _______; she won't be able to eat out for months!", options: {"A": "hand", "B": "foot", "C": "leg", "D": "toe"}, answer: "C", explain: "Thành ngữ 'cost an arm and a leg' (giá cắt cổ, vô cùng đắt đỏ)." },
+    { id: "q288", text: "If your bank account is 'in the _______', it means you have spent more money than you actually have and owe the bank.", options: {"A": "black", "B": "blue", "C": "red", "D": "green"}, answer: "C", explain: "Thành ngữ 'in the red' (trong tình trạng nợ nần, thâm hụt tài khoản). Trái nghĩa với 'in the black' (có sinh lời)." },
+    { id: "q289", text: "Despite working two jobs, they still struggle to make ends _______ due to the rising cost of living in the city.", options: {"A": "meet", "B": "join", "C": "touch", "D": "connect"}, answer: "A", explain: "Thành ngữ 'make ends meet' (kiếm vừa đủ sống, trang trải đủ chi phí cơ bản)." },
+    { id: "q290", text: "The term '_______' refers to individuals who start a business, taking on financial risks in the hope of making a profit.", options: {"A": "employees", "B": "investors", "C": "entrepreneurs", "D": "applicants"}, answer: "C", explain: "Định nghĩa về 'nhà khởi nghiệp': bắt đầu kinh doanh và chấp nhận rủi ro tài chính để sinh lời." },
+
+    { type: "title", unit: "E. Đọc hiểu ngữ cảnh & Tìm lỗi sai (Contextual Reading & Error Identification)" },
+    { id: "q291", text: "Choose the word that best fits the blank: 'A good business plan is essential to secure _______ from banks or private investors.'", options: {"A": "receipts", "B": "funding", "C": "refunds", "D": "bargains"}, answer: "B", explain: "Cần đảm bảo 'nguồn vốn/tài trợ' (funding) từ ngân hàng hoặc nhà đầu tư tư nhân." },
+    { id: "q292", text: "Choose the word that best fits the blank: 'The company's net _______ for the third quarter exceeded $5 million, breaking all previous records.'", options: {"A": "profit", "B": "charge", "C": "wage", "D": "receipt"}, answer: "A", explain: "'Net profit' (lợi nhuận ròng/thực lãi) quý 3 vượt 5 triệu đô." },
+    { id: "q293", text: "Choose the closest synonym for 'income':", options: {"A": "expense", "B": "revenue", "C": "debt", "D": "loan"}, answer: "B", explain: "'Income' (thu nhập, dòng tiền vào) đồng nghĩa sát nhất với 'revenue' (doanh thu). Trái nghĩa là expense (chi phí), debt (khoản nợ)." },
+    { id: "q294", text: "Choose the antonym for 'afford':", options: {"A": "purchase", "B": "lack the means (to)", "C": "manage", "D": "supply"}, answer: "B", explain: "'Afford' là đủ khả năng chi trả. Từ trái nghĩa là thiếu phương tiện/tiền bạc để mua (lack the means to)." },
+    { id: "q295", text: "TÌM LỖI SAI: (A) If you want to exchange this shirt (B) for a different size, you (C) must to provide the (D) original receipt.", options: {"A": "If you", "B": "for a", "C": "must to", "D": "original"}, answer: "C", explain: "must to -> must. (Sau động từ khuyết thiếu must cộng trực tiếp động từ nguyên mẫu, không có 'to')." },
+    { id: "q296", text: "TÌM LỖI SAI: The (A) new bakery in town is (B) offering a special (C) discount: buy two cupcakes and get the third one (D) freely.", options: {"A": "new bakery", "B": "offering", "C": "discount", "D": "freely"}, answer: "D", explain: "freely -> free. (Cụm từ 'get something free' = nhận miễn phí. Free ở đây đóng vai trò tính từ bổ nghĩa cho 'the third one')." },
+    { id: "q297", text: "TÌM LỖI SAI: My brother (A) avoids to shop online because he (B) has had several bad experiences with items not (C) matching their (D) descriptions.", options: {"A": "avoids to shop", "B": "has had", "C": "matching", "D": "descriptions"}, answer: "A", explain: "avoids to shop -> avoids shopping. (Sau động từ avoid phải dùng V-ing: avoid shopping)." },
+    { id: "q298", text: "TÌM LỖI SAI: (A) Instead of wasting money (B) to expensive video games, he (C) decided to invest it (D) in a coding course.", options: {"A": "Instead of", "B": "to expensive", "C": "decided", "D": "in a"}, answer: "B", explain: "to -> on. (Cấu trúc tiêu xài/lãng phí: waste money ON something)." },
+    { id: "q299", text: "TÌM LỖI SAI: The (A) entrepreneur agreed (B) selling a 20% stake in her company (C) to the investors in exchange (D) for the required funding.", options: {"A": "entrepreneur", "B": "selling", "C": "to the", "D": "for the"}, answer: "B", explain: "selling -> to sell. (Cấu trúc đồng ý: agree TO DO something -> agree to sell)." },
+    { id: "q300", text: "TÌM LỖI SAI: She (A) went to the (B) greengrocer's to buy some beef and chicken (C) for the barbecue party (D) this weekend.", options: {"A": "went to", "B": "greengrocer's", "C": "for the", "D": "this weekend"}, answer: "B", explain: "greengrocer's -> butcher's. (Lỗi logic ngữ cảnh: Đi mua thịt bò và gà (beef and chicken) thì phải đến cửa hàng thịt (butcher's), không phải cửa hàng rau củ quả)." }
+
+];
+
+        let secondsElapsed = 0;
+        let timerInterval;
+        let submitAttempts = 0;
+        let totalResets = 0;
+
+        // TỰ ĐỘNG VẼ CÂU HỎI VÀO HTML
+        function renderQuestions() {
+            const container = document.getElementById('questions-area');
+            container.innerHTML = "";
+            let qIndex = 1;
+
+            questionBank.forEach((item) => {
+                if (item.type === "title") {
+                    container.innerHTML += `<h2 class="unit-title">${item.unit}</h2>`;
+                } else {
+                    let html = `
+                        <div class="question-block" id="block-${item.id}">
+                            <div class="question-text">Câu ${qIndex}: ${item.text}</div>
+                            <div class="options-group">
+                                <label><input type="radio" name="${item.id}" value="A"> A. ${item.options.A}</label>
+                                <label><input type="radio" name="${item.id}" value="B"> B. ${item.options.B}</label>
+                                <label><input type="radio" name="${item.id}" value="C"> C. ${item.options.C}</label>
+                                <label><input type="radio" name="${item.id}" value="D"> D. ${item.options.D}</label>
+                            </div>
+                        </div>
+                    `;
+                    container.innerHTML += html;
+                    qIndex++;
+                }
+            });
+        }
+
+        function startPractice() {
+            const name = document.getElementById('studentName').value.trim();
+            const cls = document.getElementById('studentClass').value.trim();
+
+            if(name === "" || cls === "") {
+                alert("Em phải nhập đầy đủ Họ tên và Lớp mới được bắt đầu!");
+                return;
+            }
+
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('test-container').style.display = 'block';
+            document.getElementById('header-bar').style.display = 'flex';
+            document.getElementById('display-name').innerText = `${name} (${cls})`;
+
+            renderQuestions();
+            
+            // Bấm giờ đếm tiến
+            timerInterval = setInterval(() => {
+                secondsElapsed++;
+                let m = Math.floor(secondsElapsed / 60);
+                let s = secondsElapsed % 60;
+                document.getElementById('timer').innerText = `⏱ Thời gian: ${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s}`;
+            }, 1000);
+        }
+
+        function checkAnswers() {
+            // 1. Kiểm tra xem đã điền hết chưa
+            let missing = false;
+            let allCorrect = true;
+
+            const questions = questionBank.filter(q => q.type !== "title");
+
+            for (let q of questions) {
+                let selected = document.querySelector(`input[name="${q.id}"]:checked`);
+                if (!selected) {
+                    missing = true;
+                    break;
+                }
+                if (selected.value !== q.answer) {
+                    allCorrect = false;
+                }
+            }
+
+            if (missing) {
+                alert("Em vẫn chưa chọn đáp án cho tất cả các câu. Hãy kéo lên kiểm tra lại nhé!");
+                return;
+            }
+
+            // 2. Logic Nộp bài & Cảnh báo
+            submitAttempts++;
+            document.getElementById('attempt-count').innerText = submitAttempts;
+
+            if (allCorrect) {
+                // THÀNH CÔNG 100%
+                clearInterval(timerInterval);
+                let m = Math.floor(secondsElapsed / 60);
+                let s = secondsElapsed % 60;
+                let timeString = `${m} phút ${s} giây`;
+
+                document.getElementById('questions-area').style.display = 'none';
+                document.getElementById('submit-btn').style.display = 'none';
+                document.getElementById('success-screen').style.display = 'block';
+                document.getElementById('final-time').innerText = timeString;
+                document.getElementById('final-resets').innerText = totalResets;
+
+                sendReportEmail(timeString);
+
+            } else {
+                // SAI ĐÁP ÁN
+                if (submitAttempts < 3) {
+                    alert(`🚨 Vẫn còn đáp án chưa chính xác, vui lòng suy nghĩ và kiểm tra lại.\nCẢNH BÁO: Em chỉ còn ${3 - submitAttempts} lần nộp!`);
+                } else {
+                    alert(`💥 Em đã nộp sai 3 lần!\nHệ thống sẽ XÓA SẠCH toàn bộ đáp án em vừa chọn.\nHãy làm lại từ đầu nhé!`);
+                    resetAllAnswers();
+                }
+            }
+        }
+
+        function resetAllAnswers() {
+            document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.checked = false;
+            });
+            submitAttempts = 0;
+            totalResets++;
+            document.getElementById('attempt-count').innerText = submitAttempts;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Tự động báo cáo về Email giáo viên
+        function sendReportEmail(timeString) {
+            const name = document.getElementById('studentName').value;
+            const cls = document.getElementById('studentClass').value;
+
+            let report = `HỌC VIÊN: ${name}\n`;
+            report += `LỚP: ${cls}\n`;
+            report += `TRẠNG THÁI: Đã hoàn thành 100% từ vựng Unit 5-6\n`;
+            report += `THỜI GIAN LÀM BÀI: ${timeString}\n`;
+            report += `SỐ LẦN BỊ RESET (SAI QUÁ 3 LẦN): ${totalResets} lần\n`;
+
+            fetch("https://api.web3forms.com/submit", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Accept": "application/json" },
+                body: JSON.stringify({
+                    access_key: "8f705510-1c71-4183-88e5-a9f1b54c0251", // Mã API của em
+                    subject: `[ÔN TẬP TỪ VỰNG: ${timeString}] ${cls} - ${name}`,
+                    from_name: "Hệ Thống Ôn Luyện Từ Vựng",
+                    message: report.replace(/\n/g, "<br>")
+                })
+            }).then(response => {
+                console.log("Email báo cáo đã được gửi thành công!");
+            }).catch(error => console.log(error));
+        }
+    </script>
+</body>
+</html>
