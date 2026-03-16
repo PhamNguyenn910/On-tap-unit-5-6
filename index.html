@@ -573,10 +573,14 @@
             logActivity("VI PHẠM LẦN " + violations, reason);
             
             if(violations >= maxViolations) {
-                document.getElementById('cheat-blocker').innerHTML = "<h1 style='font-size:4rem'>BÀI TẬP BỊ HỦY!</h1><h2>Em đã vi phạm quy chế giám sát quá 3 lần. Hệ thống đang tự động thu bài...</h2>";
+                // Thay đổi giao diện màn hình phong tỏa thành án phạt Xóa bài
+                document.getElementById('cheat-blocker').innerHTML = `
+                    <h1 style='font-size:2rem;'>Em đã vi phạm quy chế giám sát 3 lần!</h2>
+                    <p style='font-size:1.5rem; max-width: 800px; margin: 20px auto;'>Toàn bộ đáp án em đã chọn vừa bị xóa. Em buộc phải làm lại bài tập này.</p>
+                    <button class="btn-resume" onclick="resetExam()">LÀM LẠI TỪ ĐẦU</button>
+                `;
                 document.getElementById('cheat-blocker').style.display = 'flex';
-                logActivity("HỆ THỐNG", "HỦY BÀI do vi phạm quá 3 lần.");
-                setTimeout(() => checkAnswers(true), 2000); // Gửi bài khẩn cấp dưới trạng thái gian lận (isForce = true)
+                logActivity("HỆ THỐNG", "ĐÌNH CHỈ: Vi phạm 3 lần. Buộc học viên làm lại từ đầu.");
                 return;
             }
             document.getElementById('cheat-blocker').style.display = 'flex';
@@ -594,6 +598,34 @@
                 });
             }
         }
+
+        function resetExam() {
+            // 1. Quét toàn bộ các input radio và bỏ chọn (Xóa đáp án)
+            document.querySelectorAll('input[type=radio]').forEach(radio => {
+                radio.checked = false;
+            });
+
+            // 2. Trả số lần vi phạm về 0 để học sinh bắt đầu "chu kỳ" làm lại
+            violations = 0;
+            document.getElementById('violation-count').innerText = violations;
+
+            // 3. Ghi nhận vào lịch sử để cuối giờ báo cáo cho giáo viên
+            logActivity("HỆ THỐNG", "Đã thực thi hình phạt: Xóa sạch đáp án. Học viên bắt đầu làm lại.");
+
+            // 4. Phục hồi lại cấu trúc HTML gốc của màn hình phong tỏa 
+            // (Để nếu học sinh tiếp tục vi phạm lần 1, 2 của chu kỳ mới, hệ thống vẫn báo lỗi bình thường)
+            document.getElementById('cheat-blocker').innerHTML = `
+                <h1>🚨 PHÁT HIỆN VI PHẠM 🚨</h1>
+                <p id="cheat-reason"></p>
+                <p>Đề thi đã bị tạm khóa che khuất. Hành động này đã được ghi vào lịch sử nộp cho giáo viên.</p>
+                <button class="btn-resume" onclick="resumeExam()">XÁC NHẬN LỖI - QUAY LẠI TOÀN MÀN HÌNH</button>
+                <p style="margin-top: 20px; font-size: 1.2rem;">(Số lần vi phạm: <span id="blocker-violation-count">0</span>/3)</p>
+            `;
+
+            // 5. Mở khóa màn hình và bắt ép quay lại Fullscreen để làm bài tiếp
+            resumeExam();
+        }
+        
 
         // HÀM CHẤM ĐIỂM BẮT BUỘC 100%
         function checkAnswers(isForce = false) {
