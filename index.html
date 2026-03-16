@@ -694,7 +694,7 @@
                 document.getElementById('attempt-count').innerText = submitAttempts;
             }
 
-            let missing = false;
+            let missingCount = 0; // Đổi biến boolean thành biến đếm số câu chưa làm
             let correctCount = 0;
             const questions = questionBank.filter(q => q.type !== "title");
             let totalQuestions = questions.length;
@@ -708,49 +708,63 @@
 
             for (let q of questions) {
                 let selected = document.querySelector(`input[name="${q.id}"]:checked`);
+                let block = document.getElementById(`block-${q.id}`);
+                
                 if (!selected) {
-                    missing = true;
+                    missingCount++; // Tăng biến đếm câu bỏ trống
+                    if (block) {
+                        // Đổi giao diện câu bỏ trống thành viền cam đứt nét để dễ nhận diện
+                        block.style.border = '2px dashed #e67e22';
+                        block.style.borderLeft = '5px solid #e67e22';
+                    }
                 } else {
                     if (selected.value === q.answer) {
                         correctCount++;
                     } else {
                         wrongQuestions.push(q.id); 
+                        if (block) {
+                            // Đổi giao diện câu sai thành viền đỏ
+                            block.style.border = '2px solid red';
+                            block.style.borderLeft = '5px solid red';
+                        }
                     }
                 }
             }
 
             if (!isForce) {
-                // SỬ DỤNG CUSTOM ALERT THAY VÌ ALERT NATIVE
-                if (missing) {
-                    showCustomAlert("Em vẫn chưa chọn đáp án cho tất cả các câu.<br><br>Hãy kéo lên kiểm tra lại!");
-                    return; 
-                }
-
-                if (correctCount < totalQuestions) {
-                    showCustomAlert(`Em mới làm đúng <b>${correctCount}/${totalQuestions}</b> câu.<br><br>Em phải làm ĐÚNG HOÀN TOÀN 300 CÂU mới được nộp bài!<br><br>Các câu sai đã được bôi viền đỏ. Hãy kiểm tra và chọn lại đáp án nhé.`);
+                // Nếu có CÂU CHƯA LÀM hoặc CÂU SAI thì chặn lại và báo cáo chi tiết
+                if (missingCount > 0 || correctCount < totalQuestions) {
+                    let alertMsg = `Em hiện tại làm đúng <b>${correctCount}/${totalQuestions}</b> câu.<br><br>`;
                     
-                    wrongQuestions.forEach(id => {
-                        let block = document.getElementById(`block-${id}`);
-                        if(block) {
-                            block.style.border = '2px solid red';
-                            block.style.borderLeft = '5px solid red';
-                        }
-                    });
-                    logActivity("HỆ THỐNG", `Nộp bài thất bại (Lần ${submitAttempts}). Sai ${totalQuestions - correctCount} câu.`);
+                    if (missingCount > 0) {
+                        alertMsg += `⚠️ Em còn bỏ trống <b>${missingCount}</b> câu (được bôi viền cam đứt nét).<br>`;
+                    }
+                    if (wrongQuestions.length > 0) {
+                        alertMsg += `❌ Em đang làm sai <b>${wrongQuestions.length}</b> câu (được bôi viền đỏ).<br>`;
+                    }
+                    
+                    alertMsg += `<br>Hãy kéo lên kiểm tra lại. Em phải hoàn thành ĐÚNG HOÀN TOÀN 300 CÂU mới được nộp bài nhé!`;
+                    
+                    showCustomAlert(alertMsg);
+                    
+                    // Ghi log chi tiết số lượng sai/trống vào hệ thống
+                    logActivity("HỆ THỐNG", `Nộp bài thất bại (Lần ${submitAttempts}). Trống: ${missingCount}, Sai: ${wrongQuestions.length} câu.`);
                     return; 
                 }
 
-                // SỬ DỤNG CUSTOM CONFIRM VỚI CALLBACK ĐỂ XỬ LÝ NỘP BÀI
+                // Vượt qua hết lỗi -> Đúng 100% -> Hiện hộp thoại xác nhận nộp bài
                 showCustomConfirm("Tuyệt vời! Em đã hoàn thành xuất sắc toàn bộ 300 câu chính xác.<br><br>Có chắc chắn muốn nộp bài để xem đáp án giải thích chi tiết không?", function() {
                     logActivity("HỆ THỐNG", "Học viên tự nguyện nộp bài thành công.");
-                    executeFinalSubmit(questions, correctCount, totalQuestions); // Gọi hàm nộp bài chính thức
+                    executeFinalSubmit(questions, correctCount, totalQuestions);
                 });
 
             } else {
+                // Dành cho trường hợp hệ thống cưỡng chế thu bài do gian lận (Không đụng tới)
                 logActivity("HỆ THỐNG", "Hệ thống tự động thu bài do vi phạm.");
-                executeFinalSubmit(questions, correctCount, totalQuestions); // Cưỡng chế nộp bài
+                executeFinalSubmit(questions, correctCount, totalQuestions); 
             }
-        }
+
+            
 
         // TÁCH ĐOẠN XỬ LÝ DOM SAU KHI NỘP THÀNH HÀM RIÊNG ĐỂ DỄ GỌI TRONG CALLBACK
         function executeFinalSubmit(questions, correctCount, totalQuestions) {
