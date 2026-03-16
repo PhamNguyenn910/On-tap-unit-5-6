@@ -90,6 +90,19 @@
             </div>
     </div>
 
+
+
+
+    <div id="custom-modal" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 100000; align-items: center; justify-content: center; flex-direction: column;">
+        <div style="background: white; padding: 35px; border-radius: 12px; max-width: 500px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+            <h2 id="modal-title" style="color: #e74c3c; margin-top: 0; font-size: 28px;">⚠️ THÔNG BÁO</h2>
+            <p id="modal-message" style="font-size: 18px; line-height: 1.6; color: #333; margin-bottom: 25px;"></p>
+            <div id="modal-buttons" style="display: flex; justify-content: center; gap: 15px;">
+                </div>
+        </div>
+    </div>
+
+    
     <script>
         // QUẢN LÝ TRẠNG THÁI
         let secondsElapsed = 0;
@@ -107,6 +120,53 @@
             const timeString = now.toLocaleTimeString('vi-VN');
             activityLog.push(`[${timeString}] [${type}] ${message}`);
         }
+
+
+        
+
+        // HIỂN THỊ CẢNH BÁO (Thay cho alert)
+        function showCustomAlert(message) {
+            document.getElementById('modal-title').innerText = "⚠️ CẢNH BÁO";
+            document.getElementById('modal-title').style.color = "#e74c3c";
+            document.getElementById('modal-message').innerHTML = message;
+            document.getElementById('modal-buttons').innerHTML = `
+                <button onclick="document.getElementById('custom-modal').style.display='none'" style="padding: 12px 30px; font-size: 18px; background: #3498db; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">ĐÃ HIỂU</button>
+            `;
+            document.getElementById('custom-modal').style.display = 'flex';
+        }
+
+        // HIỂN THỊ XÁC NHẬN (Thay cho confirm) - Sử dụng Callback
+        function showCustomConfirm(message, onConfirmCallback) {
+            document.getElementById('modal-title').innerText = "✅ XÁC NHẬN NỘP BÀI";
+            document.getElementById('modal-title').style.color = "#27ae60";
+            document.getElementById('modal-message').innerHTML = message;
+            
+            // Xóa nội dung cũ và tạo 2 nút Hủy / Đồng ý
+            let btnContainer = document.getElementById('modal-buttons');
+            btnContainer.innerHTML = ''; 
+
+            let btnCancel = document.createElement('button');
+            btnCancel.innerText = "HỦY, KIỂM TRA LẠI";
+            btnCancel.style.cssText = "padding: 12px 20px; font-size: 16px; background: #95a5a6; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;";
+            btnCancel.onclick = function() { document.getElementById('custom-modal').style.display = 'none'; };
+
+            let btnConfirm = document.createElement('button');
+            btnConfirm.innerText = "CHẮC CHẮN NỘP";
+            btnConfirm.style.cssText = "padding: 12px 20px; font-size: 16px; background: #e67e22; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;";
+            btnConfirm.onclick = function() {
+                document.getElementById('custom-modal').style.display = 'none';
+                onConfirmCallback(); // Gọi hàm thực thi nộp bài
+            };
+
+            btnContainer.appendChild(btnCancel);
+            btnContainer.appendChild(btnConfirm);
+            
+            document.getElementById('custom-modal').style.display = 'flex';
+        }
+
+
+
+        
 
         // CƠ CHẾ CHỐNG COPY BẰNG BÀN PHÍM VÀ DEVTOOLS
         document.addEventListener('keydown', function(e) {
@@ -627,7 +687,7 @@
         }
         
 
-        // HÀM CHẤM ĐIỂM BẮT BUỘC 100%
+       // HÀM CHẤM ĐIỂM BẮT BUỘC 100% (Đã khắc phục lỗi mất focus)
         function checkAnswers(isForce = false) {
             if (!isForce) {
                 submitAttempts++;
@@ -640,7 +700,7 @@
             let totalQuestions = questions.length;
             let wrongQuestions = [];
 
-            // Reset viền màu trước khi chấm (phòng trường hợp ấn nộp lại)
+            // Reset viền màu trước khi chấm
             document.querySelectorAll('.question-block').forEach(block => {
                 block.style.border = 'none';
                 block.style.borderLeft = '5px solid #3498db'; 
@@ -654,21 +714,21 @@
                     if (selected.value === q.answer) {
                         correctCount++;
                     } else {
-                        wrongQuestions.push(q.id); // Lưu lại những câu làm sai
+                        wrongQuestions.push(q.id); 
                     }
                 }
             }
 
-            // Nếu người dùng bấm nộp bình thường (không phải bị force submit do gian lận)
             if (!isForce) {
+                // SỬ DỤNG CUSTOM ALERT THAY VÌ ALERT NATIVE
                 if (missing) {
-                    alert("⚠️ CẢNH BÁO: Em vẫn chưa chọn đáp án cho tất cả các câu. Hãy kéo lên kiểm tra lại!");
+                    showCustomAlert("Em vẫn chưa chọn đáp án cho tất cả các câu.<br><br>Hãy kéo lên kiểm tra lại!");
                     return; 
                 }
 
                 if (correctCount < totalQuestions) {
-                    alert(`⚠️ CẢNH BÁO: Em mới làm đúng ${correctCount}/${totalQuestions} câu. Em phải làm ĐÚNG HOÀN TOÀN 300 CÂU mới được nộp bài!\n\nCác câu sai đã được bôi viền đỏ. Hãy kiểm tra và chọn lại đáp án nhé.`);
-                    // Bôi đỏ những câu sai để học sinh có thể sửa chữa
+                    showCustomAlert(`Em mới làm đúng <b>${correctCount}/${totalQuestions}</b> câu.<br><br>Em phải làm ĐÚNG HOÀN TOÀN 300 CÂU mới được nộp bài!<br><br>Các câu sai đã được bôi viền đỏ. Hãy kiểm tra và chọn lại đáp án nhé.`);
+                    
                     wrongQuestions.forEach(id => {
                         let block = document.getElementById(`block-${id}`);
                         if(block) {
@@ -680,14 +740,20 @@
                     return; 
                 }
 
-                let confirmSubmit = confirm("Tuyệt vời! Em đã hoàn thành xuất sắc toàn bộ 300 câu chính xác. Có chắc chắn muốn nộp bài để xem đáp án giải thích chi tiết không?");
-                if (!confirmSubmit) return;
-                logActivity("HỆ THỐNG", "Học viên tự nguyện nộp bài thành công.");
+                // SỬ DỤNG CUSTOM CONFIRM VỚI CALLBACK ĐỂ XỬ LÝ NỘP BÀI
+                showCustomConfirm("Tuyệt vời! Em đã hoàn thành xuất sắc toàn bộ 300 câu chính xác.<br><br>Có chắc chắn muốn nộp bài để xem đáp án giải thích chi tiết không?", function() {
+                    logActivity("HỆ THỐNG", "Học viên tự nguyện nộp bài thành công.");
+                    executeFinalSubmit(questions, correctCount, totalQuestions); // Gọi hàm nộp bài chính thức
+                });
+
             } else {
                 logActivity("HỆ THỐNG", "Hệ thống tự động thu bài do vi phạm.");
+                executeFinalSubmit(questions, correctCount, totalQuestions); // Cưỡng chế nộp bài
             }
+        }
 
-            // ---- CHÍNH THỨC NỘP BÀI ----
+        // TÁCH ĐOẠN XỬ LÝ DOM SAU KHI NỘP THÀNH HÀM RIÊNG ĐỂ DỄ GỌI TRONG CALLBACK
+        function executeFinalSubmit(questions, correctCount, totalQuestions) {
             clearInterval(timerInterval);
             testActive = false; 
 
@@ -721,7 +787,6 @@
                     }
                 });
 
-                // Chỉ tạo div giải thích nếu nó chưa tồn tại (tránh lỗi spam thẻ div)
                 if (q.explain && !qBlock.querySelector('.explain-box')) {
                     let explainDiv = document.createElement('div');
                     explainDiv.className = 'explain-box';
@@ -761,6 +826,10 @@
 
             sendReportEmail(correctCount, totalQuestions, finalScore, timeString);
         }
+
+
+
+        
 
         // TỰ ĐỘNG GỬI EMAIL BÁO CÁO CHO GIÁO VIÊN QUA WEB3FORMS
         function sendReportEmail(correctCount, totalQuestions, finalScore, timeString) {
