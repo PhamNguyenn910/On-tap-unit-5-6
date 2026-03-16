@@ -502,69 +502,136 @@
             }, 1000);
         }
 
+
+
+
+        
        function checkAnswers() {
-            let confirmSubmit = confirm("Em có chắc chắn muốn nộp bài để xem điểm và đáp án chi tiết không?");
-            if (!confirmSubmit) return;
-
-            // Dừng đồng hồ đếm giờ và tắt chế độ bắt lỗi gian lận để học sinh thoải mái xem đáp án
-            clearInterval(timerInterval);
-            testActive = false; 
-
+            // 1. KIỂM TRA XEM ĐÃ LÀM HẾT CHƯA VÀ CÓ ĐÚNG 100% KHÔNG
+            let missing = false;
+            let allCorrect = true;
             let correctCount = 0;
+
             const questions = questionBank.filter(q => q.type !== "title");
             let totalQuestions = questions.length;
 
-            // Vòng lặp chấm điểm và hiển thị giải thích cho từng câu
-            questions.forEach(q => {
-                let selectedRadio = document.querySelector(`input[name="${q.id}"]:checked`);
-                let userAns = selectedRadio ? selectedRadio.value : null;
-                let qBlock = document.getElementById(`block-${q.id}`);
-                
-                let labels = qBlock.querySelectorAll('label');
-                
-                labels.forEach(label => {
-                    let radio = label.querySelector('input');
-                    radio.disabled = true; // Khóa nút không cho chọn lại
+            for (let q of questions) {
+                let selected = document.querySelector(`input[name="${q.id}"]:checked`);
+                // Nếu có 1 câu chưa chọn
+                if (!selected) {
+                    missing = true;
+                    break; 
+                }
+                // Kiểm tra đúng sai ngầm
+                if (selected.value !== q.answer) {
+                    allCorrect = false;
+                } else {
+                    correctCount++;
+                }
+            }
+
+            // CHẶN: NẾU CHƯA LÀM HẾT
+            if (missing) {
+                alert("⚠️ CẢNH BÁO: Em vẫn chưa chọn đáp án cho tất cả các câu. Hãy kéo lên kiểm tra lại và hoàn thành trọn vẹn 300 câu trước khi nộp bài nhé!");
+                return; 
+            }
+
+            // Đã làm hết -> Bắt đầu tính 1 lần nộp bài
+            submitAttempts++;
+            document.getElementById('attempt-count').innerText = submitAttempts;
+
+            // 2. XỬ LÝ KẾT QUẢ
+            if (allCorrect) {
+                // =============== THÀNH CÔNG ĐÚNG 100% ===============
+                let confirmSubmit = confirm("Hệ thống xác nhận em đã chọn đáp án cho cả 300 câu. Bấm OK để chốt kết quả!");
+                if (!confirmSubmit) return;
+
+                // Dừng đồng hồ đếm giờ và tắt chế độ bắt lỗi gian lận
+                clearInterval(timerInterval);
+                testActive = false; 
+
+                // Vòng lặp hiển thị giao diện ĐẸP và GIẢI THÍCH CHI TIẾT
+                questions.forEach(q => {
+                    let qBlock = document.getElementById(`block-${q.id}`);
+                    let labels = qBlock.querySelectorAll('label');
                     
-                    if (radio.value === q.answer) {
-                        // Tô xanh đáp án chuẩn
-                        label.style.backgroundColor = 'rgba(57, 255, 20, 0.2)';
-                        label.style.border = '2px solid #39ff14';
-                        label.style.color = '#1b730d';
-                        label.style.fontWeight = 'bold';
+                    labels.forEach(label => {
+                        let radio = label.querySelector('input');
+                        radio.disabled = true; // Khóa nút không cho chọn lại
                         
-                        if (userAns === q.answer) {
+                        // Lúc này chắc chắn học sinh đã chọn đúng 100% nên chỉ việc tô xanh
+                        if (radio.value === q.answer) {
+                            label.style.backgroundColor = 'rgba(57, 255, 20, 0.2)';
+                            label.style.border = '2px solid #39ff14';
+                            label.style.color = '#1b730d';
+                            label.style.fontWeight = 'bold';
                             label.innerHTML += ' <span style="color:#27ae60; float:right; font-weight:bold;">✔ CHÍNH XÁC</span>';
-                        } else {
-                            label.innerHTML += ' <span style="color:#27ae60; float:right; font-weight:bold;">👈 ĐÁP ÁN CHUẨN</span>';
                         }
-                    } else if (radio.value === userAns && userAns !== q.answer) {
-                        // Tô đỏ nếu học sinh chọn sai
-                        label.style.backgroundColor = 'rgba(255, 0, 0, 0.1)';
-                        label.style.border = '2px solid red';
-                        label.style.color = 'red';
-                        label.innerHTML += ' <span style="color:red; float:right; font-weight:bold;">✘ SAI</span>';
+                    });
+
+                    // Tự động chèn khung giải thích chi tiết ngay dưới câu hỏi
+                    if (q.explain) {
+                        let explainDiv = document.createElement('div');
+                        explainDiv.style.marginTop = '15px';
+                        explainDiv.style.padding = '15px';
+                        explainDiv.style.backgroundColor = '#eaf2f8';
+                        explainDiv.style.borderLeft = '5px solid #2980b9';
+                        explainDiv.style.borderRadius = '5px';
+                        explainDiv.style.fontSize = '16px';
+                        explainDiv.innerHTML = `<strong style="color: #2980b9;">📝 Giải thích chi tiết:</strong> ${q.explain}`;
+                        qBlock.appendChild(explainDiv);
                     }
                 });
 
-                // Cộng điểm nếu đúng
-                if (userAns === q.answer) {
-                    correctCount++;
-                }
+                // Tính điểm và thời gian
+                let scorePerQuestion = 10 / totalQuestions;
+                let finalScore = (scorePerQuestion * correctCount).toFixed(2); // Sẽ luôn là 10.00
+                
+                let m = Math.floor(secondsElapsed / 60);
+                let s = secondsElapsed % 60;
+                let timeString = `${m} phút ${s} giây`;
 
-                // Tự động chèn khung giải thích chi tiết ngay dưới câu hỏi
-                if (q.explain) {
-                    let explainDiv = document.createElement('div');
-                    explainDiv.style.marginTop = '15px';
-                    explainDiv.style.padding = '15px';
-                    explainDiv.style.backgroundColor = '#eaf2f8';
-                    explainDiv.style.borderLeft = '5px solid #2980b9';
-                    explainDiv.style.borderRadius = '5px';
-                    explainDiv.style.fontSize = '16px';
-                    explainDiv.innerHTML = `<strong style="color: #2980b9;">📝 Giải thích chi tiết:</strong> ${q.explain}`;
-                    qBlock.appendChild(explainDiv);
+                // Ẩn nút nộp bài và hiển thị màn hình kết quả
+                document.getElementById('submit-btn').style.display = 'none';
+                
+                let successScreen = document.getElementById('success-screen');
+                successScreen.innerHTML = `
+                <div style="background: #2c3e50; color: white; padding: 30px; border-radius: 10px; margin-top: 30px; border: 5px solid #f1c40f;">
+                    <h1 style="color: white; margin-bottom: 0;">📊 KẾT QUẢ BÀI LÀM</h1>
+                    <h1 style="font-size: 70px; color: #39ff14; margin: 10px 0; text-shadow: 0 0 10px rgba(57,255,20,0.5);">${finalScore} <span style="font-size:30px; color:white;">/ 10</span></h1>
+                    <p style="font-size: 22px; color: white;">Số câu đúng: <b style="color: #f1c40f;">${correctCount} / ${totalQuestions}</b></p>
+                    <p style="font-size: 20px; color: white;">Thời gian làm bài: <b>${timeString}</b></p>
+                    <p style="color: #3498db; font-weight:bold; margin-top:20px; font-style: italic;">Hệ thống đang tự động gửi báo cáo chi tiết đến Giáo viên...</p>
+                    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" style="margin-top:20px; padding:15px 30px; font-size:18px; font-weight:bold; background:#e74c3c; color:white; border:none; border-radius:5px; cursor:pointer; text-transform: uppercase;">Kéo lên kiểm tra đáp án chi tiết</button>
+                </div>
+                `;
+                
+                successScreen.style.display = 'block';
+
+                // Gửi báo cáo ngầm qua Email
+                sendReportEmail(correctCount, totalQuestions, finalScore, timeString);
+
+            } else {
+                // =============== SAI ĐÁP ÁN (Chưa đúng 100%) ===============
+                if (submitAttempts < 3) {
+                    alert(`🚨 Vẫn còn đáp án chưa chính xác, vui lòng suy nghĩ và kiểm tra lại.\nCẢNH BÁO: Em chỉ còn ${3 - submitAttempts} lần nộp!`);
+                } else {
+                    alert(`💥 Em đã nộp sai 3 lần!\nHệ thống sẽ XÓA SẠCH toàn bộ đáp án em vừa chọn.\nHãy làm lại từ đầu nhé!`);
+                    resetAllAnswers();
                 }
+            }
+        }
+
+        // Hàm xóa sạch đáp án khi sai 3 lần
+        function resetAllAnswers() {
+            document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.checked = false;
             });
+            submitAttempts = 0;
+            totalResets++;
+            document.getElementById('attempt-count').innerText = submitAttempts;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
 
             // Tính điểm trên thang điểm 10
             let scorePerQuestion = 10 / totalQuestions;
@@ -604,6 +671,7 @@
             report += `ĐIỂM SỐ: ${finalScore} / 10\n`;
             report += `SỐ CÂU ĐÚNG: ${correctCount} / ${totalQuestions}\n`;
             report += `THỜI GIAN LÀM BÀI: ${timeString}\n`;
+            report += `SỐ LẦN BẤM NỘP BÀI: ${submitAttempts} lần\n`; 
             report += `SỐ LẦN VI PHẠM GIÁM SÁT MÀN HÌNH: ${violations}/3 lần\n`;
 
             fetch("https://api.web3forms.com/submit", {
