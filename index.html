@@ -90,9 +90,6 @@
             </div>
     </div>
 
-
-
-
     <div id="custom-modal" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 100000; align-items: center; justify-content: center; flex-direction: column;">
         <div style="background: white; padding: 35px; border-radius: 12px; max-width: 500px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
             <h2 id="modal-title" style="color: #e74c3c; margin-top: 0; font-size: 28px;">⚠️ THÔNG BÁO</h2>
@@ -102,7 +99,6 @@
         </div>
     </div>
 
-    
     <script>
         // QUẢN LÝ TRẠNG THÁI
         let secondsElapsed = 0;
@@ -112,6 +108,7 @@
         const maxViolations = 3;
         let testActive = false;
         let isExamLocked = false;
+        let isTransitioning = false; // Biến cờ xử lý xung đột Fullscreen - Blur
         let activityLog = [];
 
         // HÀM GHI LOG HOẠT ĐỘNG
@@ -120,9 +117,6 @@
             const timeString = now.toLocaleTimeString('vi-VN');
             activityLog.push(`[${timeString}] [${type}] ${message}`);
         }
-
-
-        
 
         // HIỂN THỊ CẢNH BÁO (Thay cho alert)
         function showCustomAlert(message) {
@@ -163,10 +157,6 @@
             
             document.getElementById('custom-modal').style.display = 'flex';
         }
-
-
-
-        
 
         // CƠ CHẾ CHỐNG COPY BẰNG BÀN PHÍM VÀ DEVTOOLS
         document.addEventListener('keydown', function(e) {
@@ -465,7 +455,7 @@
             { type: "title", unit: "D. Phân biệt sắc thái nghĩa & Đọc hiểu ngữ cảnh" },
             { id: "q231", text: "While a _______ simply performs their duties for a paycheck, a truly _______ employee constantly seeks ways to improve the company.", options: {"A": "lazy / punctual", "B": "reliable / ambitious", "C": "hard-working / polite", "D": "confident / repetitive"}, answer: "B", explain: "Một người 'reliable' (đáng tin, hoàn thành nhiệm vụ cơ bản) so với người 'ambitious' (tham vọng, luôn tìm cách cải thiện và tiến lên)." },
             { id: "q232", text: "Being _______ means more than just arriving on time; it shows respect for other people's schedules.", options: {"A": "flexible", "B": "reliable", "C": "punctual", "D": "honest"}, answer: "C", explain: "'Arriving on time' là định nghĩa cốt lõi của 'punctual' (sự đúng giờ, tôn trọng thời gian người khác)." },
-            { id: "q233", text: "The job of a groundskeeper is physically demanding and mostly _______, which means it might not suit someone who prefers an air-conditioned office.", options: {"A": "indoors", "B": "outdoors", "C": "sedentary", "D": "creative"}, answer: "B", explain: "Người quản lý sân bãi phải làm ngoài trời, đối lập với phòng điều hòa ('air-conditioned office'). 'Sedentary' là ngồi nhiều." },
+            { id: "q233", text: "The job of a groundskeeper is physically demanding and mostly _______, which means it might not suit someone who prefers an air-conditioned office.", options: {"A": "indoors", "B": "outdoors", "C": "sedentary", "D": "creative"}, answer: "B", explain: "Người quản lý sân bãi phải làm ngoài trời, đối đối lập với phòng điều hòa ('air-conditioned office'). 'Sedentary' là ngồi nhiều." },
             { id: "q234", text: "In a job interview, it is crucial to appear _______ without coming across as arrogant or boastful.", options: {"A": "enthusiastic", "B": "polite", "C": "confident", "D": "organised"}, answer: "C", explain: "Phân biệt ranh giới mỏng manh: cần tỏ ra 'tự tin' (confident) nhưng không được kiêu ngạo (arrogant)." },
             { id: "q235", text: "Choose the closest synonym for 'rewarding' in the context of a career:", options: {"A": "lucrative (profitable)", "B": "fulfilling", "C": "demanding", "D": "exhausting"}, answer: "B", explain: "'Rewarding' (đem lại cảm giác thỏa mãn, có ý nghĩa) đồng nghĩa nhất với 'fulfilling'. Lucrative chỉ nghiêng về tiền bạc." },
             { id: "q236", text: "Choose the antonym for 'repetitive':", options: {"A": "monotonous", "B": "varied", "C": "tedious", "D": "reliable"}, answer: "B", explain: "Từ trái nghĩa (antonym) của 'repetitive' (lặp lại nhàm chán) là 'varied' (đa dạng, nhiều thay đổi)." },
@@ -549,15 +539,15 @@
             { id: "q300", text: "TÌM LỖI SAI: She (A) went to the (B) greengrocer's to buy some beef and chicken (C) for the barbecue party (D) this weekend.", options: {"A": "went to", "B": "greengrocer's", "C": "for the", "D": "this weekend"}, answer: "B", explain: "greengrocer's -> butcher's. (Lỗi logic ngữ cảnh: Đi mua thịt bò và gà (beef and chicken) thì phải đến cửa hàng thịt (butcher's), không phải cửa hàng rau củ quả)." }
         ];
 
-        // HÀM VẼ CÂU HỎI
+        // HÀM VẼ CÂU HỎI (ĐÃ KHẮC PHỤC HIỆN TƯỢNG DOM BOTTLENECK)
         function renderQuestions() {
             const container = document.getElementById('questions-area');
-            container.innerHTML = "";
+            let finalHTML = ""; // GOM TOÀN BỘ VÀO BIẾN ẢO THAY VÌ CHỌC VÀO DOM 300 LẦN
             let qIndex = 1;
 
             questionBank.forEach((item) => {
                 if (item.type === "title") {
-                    container.innerHTML += `<h2 class="unit-title">${item.unit}</h2>`;
+                    finalHTML += `<h2 class="unit-title">${item.unit}</h2>`;
                 } else {
                     let html = `
                         <div class="question-block" id="block-${item.id}">
@@ -570,10 +560,13 @@
                             </div>
                         </div>
                     `;
-                    container.innerHTML += html;
+                    finalHTML += html;
                     qIndex++;
                 }
             });
+            
+            // Xả toàn bộ chuỗi vào DOM đúng 1 lần duy nhất để tối ưu siêu tốc độ
+            container.innerHTML = finalHTML;
         }
 
         function requestFullScreen() {
@@ -595,17 +588,25 @@
 
             logActivity("SYSTEM", "Bắt đầu làm bài. Học viên: " + name + " - " + cls);
 
+            // Bật cờ trạng thái "Đang chuyển đổi" để né lỗi Blur của hệ điều hành
+            isTransitioning = true;
+
             document.getElementById('start-screen').style.display = 'none';
             document.getElementById('test-container').style.display = 'block';
             document.getElementById('header-bar').style.display = 'flex';
             document.getElementById('display-name').innerText = `${name} (${cls})`;
 
-            renderQuestions();
-            monitorInputs(); // Kích hoạt ghi log trắc nghiệm
+            renderQuestions(); // Giờ đây hàm này chạy cực nhanh, không gây Timeout
+            monitorInputs(); 
             
             // Kích hoạt chống gian lận
             requestFullScreen();
             testActive = true;
+
+            // Đợi 2 giây để màn hình full xong hoàn toàn mới tắt cờ bỏ qua
+            setTimeout(() => {
+                isTransitioning = false;
+            }, 2000);
 
             // Bấm giờ đếm tiến
             timerInterval = setInterval(() => {
@@ -616,10 +617,10 @@
             }, 1000);
         }
 
-        // CÁC HÀM XỬ LÝ CHỐNG GIAN LẬN (CHÍNH XÁC NHƯ HỆ THỐNG TRƯỚC ĐÓ)
-        window.addEventListener('blur', () => { if(testActive && !isExamLocked) lockExam("Mất tiêu điểm (Alt+Tab hoặc click ra ngoài cửa sổ)."); });
-        document.addEventListener('visibilitychange', () => { if(testActive && document.visibilityState === 'hidden' && !isExamLocked) lockExam("Chuyển Tab trình duyệt hoặc ẩn cửa sổ."); });
-        document.addEventListener('fullscreenchange', () => { if(testActive && !document.fullscreenElement && !isExamLocked) lockExam("Tự ý thoát chế độ Toàn Màn Hình."); });
+        // CÁC HÀM XỬ LÝ CHỐNG GIAN LẬN ĐÃ ĐƯỢC CHẶN LỖI XUNG ĐỘT FOCUS
+        window.addEventListener('blur', () => { if(testActive && !isExamLocked && !isTransitioning) lockExam("Mất tiêu điểm (Alt+Tab hoặc click ra ngoài cửa sổ)."); });
+        document.addEventListener('visibilitychange', () => { if(testActive && document.visibilityState === 'hidden' && !isExamLocked && !isTransitioning) lockExam("Chuyển Tab trình duyệt hoặc ẩn cửa sổ."); });
+        document.addEventListener('fullscreenchange', () => { if(testActive && !document.fullscreenElement && !isExamLocked && !isTransitioning) lockExam("Tự ý thoát chế độ Toàn Màn Hình."); });
 
         function lockExam(reason) {
             if(!testActive || isExamLocked) return;
@@ -633,7 +634,6 @@
             logActivity("VI PHẠM LẦN " + violations, reason);
             
             if(violations >= maxViolations) {
-                // Thay đổi giao diện màn hình phong tỏa thành án phạt Xóa bài
                 document.getElementById('cheat-blocker').innerHTML = `
                     <h1 style='font-size:2rem;'>Em đã vi phạm quy chế giám sát 3 lần!</h2>
                     <p style='font-size:1.5rem; max-width: 800px; margin: 20px auto;'>Toàn bộ đáp án em đã chọn vừa bị xóa. Em buộc phải làm lại bài tập này.</p>
@@ -648,32 +648,34 @@
 
         function resumeExam() {
             let elem = document.documentElement;
+            isTransitioning = true; // Tiếp tục bật cờ khi quay lại bài thi
+            
             if (elem.requestFullscreen) {
                 elem.requestFullscreen().then(() => {
                     document.getElementById('cheat-blocker').style.display = 'none';
                     isExamLocked = false;
                     logActivity("HỆ THỐNG", "Học viên quay lại toàn màn hình.");
+                    setTimeout(() => { isTransitioning = false; }, 2000); // Đợi phóng to xong mới tắt
                 }).catch(err => {
+                    isTransitioning = false;
                     alert("Trình duyệt từ chối. Hãy ấn lại nút này lần nữa để tiếp tục!");
                 });
+            } else {
+                // Fallback cho trình duyệt không hỗ trợ Promise chuẩn
+                document.getElementById('cheat-blocker').style.display = 'none';
+                isExamLocked = false;
+                setTimeout(() => { isTransitioning = false; }, 2000);
             }
         }
 
         function resetExam() {
-            // 1. Quét toàn bộ các input radio và bỏ chọn (Xóa đáp án)
             document.querySelectorAll('input[type=radio]').forEach(radio => {
                 radio.checked = false;
             });
-
-            // 2. Trả số lần vi phạm về 0 để học sinh bắt đầu "chu kỳ" làm lại
             violations = 0;
             document.getElementById('violation-count').innerText = violations;
-
-            // 3. Ghi nhận vào lịch sử để cuối giờ báo cáo cho giáo viên
             logActivity("HỆ THỐNG", "Đã thực thi hình phạt: Xóa sạch đáp án. Học viên bắt đầu làm lại.");
-
-            // 4. Phục hồi lại cấu trúc HTML gốc của màn hình phong tỏa 
-            // (Để nếu học sinh tiếp tục vi phạm lần 1, 2 của chu kỳ mới, hệ thống vẫn báo lỗi bình thường)
+            
             document.getElementById('cheat-blocker').innerHTML = `
                 <h1>🚨 PHÁT HIỆN VI PHẠM 🚨</h1>
                 <p id="cheat-reason"></p>
@@ -681,13 +683,9 @@
                 <button class="btn-resume" onclick="resumeExam()">XÁC NHẬN LỖI - QUAY LẠI TOÀN MÀN HÌNH</button>
                 <p style="margin-top: 20px; font-size: 1.2rem;">(Số lần vi phạm: <span id="blocker-violation-count">0</span>/3)</p>
             `;
-
-            // 5. Mở khóa màn hình và bắt ép quay lại Fullscreen để làm bài tiếp
             resumeExam();
         }
         
-
-       // HÀM CHẤM ĐIỂM BẮT BUỘC 100% (Đã gỡ lỗi Syntax và tích hợp viền cam/đỏ)
         function checkAnswers(isForce = false) {
             if (!isForce) {
                 submitAttempts++;
@@ -700,7 +698,6 @@
             let totalQuestions = questions.length;
             let wrongQuestions = [];
 
-            // Reset viền màu trước khi chấm
             document.querySelectorAll('.question-block').forEach(block => {
                 block.style.border = 'none';
                 block.style.borderLeft = '5px solid #3498db'; 
@@ -711,9 +708,9 @@
                 let block = document.getElementById(`block-${q.id}`);
                 
                 if (!selected) {
-                    missingCount++; // Tăng biến đếm câu bỏ trống
+                    missingCount++;
                     if (block) {
-                        block.style.border = '2px dashed #e67e22'; // Viền cam đứt nét cho câu trống
+                        block.style.border = '2px dashed #e67e22'; 
                         block.style.borderLeft = '5px solid #e67e22';
                     }
                 } else {
@@ -722,7 +719,7 @@
                     } else {
                         wrongQuestions.push(q.id); 
                         if (block) {
-                            block.style.border = '2px solid red'; // Viền đỏ cho câu sai
+                            block.style.border = '2px solid red'; 
                             block.style.borderLeft = '5px solid red';
                         }
                     }
@@ -730,17 +727,10 @@
             }
 
             if (!isForce) {
-                // SỬ DỤNG CUSTOM ALERT ĐỂ BÁO LỖI SAI/TRỐNG
                 if (missingCount > 0 || correctCount < totalQuestions) {
                     let alertMsg = `Em hiện tại làm đúng <b>${correctCount}/${totalQuestions}</b> câu.<br><br>`;
-                    
-                    if (missingCount > 0) {
-                        alertMsg += `⚠️ Em còn bỏ trống <b>${missingCount}</b> câu (được bôi viền cam đứt nét).<br>`;
-                    }
-                    if (wrongQuestions.length > 0) {
-                        alertMsg += `❌ Em đang làm sai <b>${wrongQuestions.length}</b> câu (được bôi viền đỏ).<br>`;
-                    }
-                    
+                    if (missingCount > 0) alertMsg += `⚠️ Em còn bỏ trống <b>${missingCount}</b> câu (được bôi viền cam đứt nét).<br>`;
+                    if (wrongQuestions.length > 0) alertMsg += `❌ Em đang làm sai <b>${wrongQuestions.length}</b> câu (được bôi viền đỏ).<br>`;
                     alertMsg += `<br>Hãy kéo lên kiểm tra lại. Em phải hoàn thành ĐÚNG HOÀN TOÀN 300 CÂU mới được nộp bài nhé!`;
                     
                     showCustomAlert(alertMsg);
@@ -748,25 +738,17 @@
                     return; 
                 }
 
-                // SỬ DỤNG CUSTOM CONFIRM ĐỂ NỘP BÀI KHI ĐẠT 100%
                 showCustomConfirm("Tuyệt vời! Em đã hoàn thành xuất sắc toàn bộ 300 câu chính xác.<br><br>Có chắc chắn muốn nộp bài để xem đáp án giải thích chi tiết không?", function() {
                     logActivity("HỆ THỐNG", "Học viên tự nguyện nộp bài thành công.");
-                    executeFinalSubmit(questions, correctCount, totalQuestions); // Gọi hàm nộp bài chính thức
+                    executeFinalSubmit(questions, correctCount, totalQuestions);
                 });
 
             } else {
-                // Thu bài cưỡng chế khi gian lận 3 lần
                 logActivity("HỆ THỐNG", "Hệ thống tự động thu bài do vi phạm.");
                 executeFinalSubmit(questions, correctCount, totalQuestions); 
             }
         }
 
-
-
-        
-            
-
-        // TÁCH ĐOẠN XỬ LÝ DOM SAU KHI NỘP THÀNH HÀM RIÊNG ĐỂ DỄ GỌI TRONG CALLBACK
         function executeFinalSubmit(questions, correctCount, totalQuestions) {
             clearInterval(timerInterval);
             testActive = false; 
@@ -841,32 +823,19 @@
             sendReportEmail(correctCount, totalQuestions, finalScore, timeString);
         }
 
-
-
-        
-
         // TỰ ĐỘNG GỬI EMAIL BÁO CÁO CHO GIÁO VIÊN QUA WEB3FORMS
         function sendReportEmail(correctCount, totalQuestions, finalScore, timeString) {
             const name = document.getElementById('studentName').value;
             const cls = document.getElementById('studentClass').value;
 
-            let report = `HỌC VIÊN: ${name}\n`;
-            report += `LỚP: ${cls}\n`;
-            report += `ĐIỂM SỐ: ${finalScore} / 10\n`;
-            report += `SỐ CÂU ĐÚNG: ${correctCount} / ${totalQuestions}\n`;
-            report += `THỜI GIAN LÀM BÀI: ${timeString}\n`;
-            report += `SỐ LẦN BẤM NỘP BÀI: ${submitAttempts} lần\n`;
-            report += `SỐ LẦN VI PHẠM GIÁM SÁT MÀN HÌNH: ${violations}/3 lần\n`;
-            report += "---------------------------\n";
-            report += "LỊCH SỬ HÀNH VI CỦA THÍ SINH:\n";
-            report += activityLog.join("\n");
+            let report = `HỌC VIÊN: ${name}\nLỚP: ${cls}\nĐIỂM SỐ: ${finalScore} / 10\nSỐ CÂU ĐÚNG: ${correctCount} / ${totalQuestions}\nTHỜI GIAN LÀM BÀI: ${timeString}\nSỐ LẦN BẤM NỘP BÀI: ${submitAttempts} lần\nSỐ LẦN VI PHẠM GIÁM SÁT MÀN HÌNH: ${violations}/3 lần\n---------------------------\nLỊCH SỬ HÀNH VI CỦA THÍ SINH:\n${activityLog.join("\n")}`;
 
             fetch("https://api.web3forms.com/submit", {
                 method: "POST",
                 headers: { "Content-Type": "application/json", "Accept": "application/json" },
                 body: JSON.stringify({
-                    access_key: "8f705510-1c71-4183-88e5-a9f1b54c0251", // MÃ API
-                    email: "bot-hethong@thitructuyen.com", // Đã đồng bộ địa chỉ Mail hệ thống
+                    access_key: "8f705510-1c71-4183-88e5-a9f1b54c0251", // MÃ API 
+                    email: "bot-hethong@thitructuyen.com", 
                     subject: `[Điểm: ${finalScore}] ${cls} - ${name} (Unit 5-6)`,
                     from_name: "Hệ Thống Ôn Luyện Trắc Nghiệm",
                     message: report.replace(/\n/g, "<br>")
